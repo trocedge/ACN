@@ -1,5 +1,6 @@
 import sqlite3
 import tempfile
+from contextlib import closing
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -62,22 +63,24 @@ class MessageLimitTests(unittest.TestCase):
     def test_parallel_posts_allow_only_one_message(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "limits.sqlite"
-            with sqlite3.connect(path) as db:
-                migrate(db)
+            with closing(sqlite3.connect(path)) as db:
+                with db:
+                    migrate(db)
 
             def attempt(_):
-                with sqlite3.connect(path, timeout=10) as db:
-                    db.execute("PRAGMA foreign_keys = ON")
-                    try:
-                        post(db, 1000)
-                        return True
-                    except sqlite3.IntegrityError as error:
-                        self.assertIn("wall_post_cooldown", str(error))
-                        return False
+                with closing(sqlite3.connect(path, timeout=10)) as db:
+                    with db:
+                        db.execute("PRAGMA foreign_keys = ON")
+                        try:
+                            post(db, 1000)
+                            return True
+                        except sqlite3.IntegrityError as error:
+                            self.assertIn("wall_post_cooldown", str(error))
+                            return False
 
             with ThreadPoolExecutor(max_workers=8) as pool:
                 self.assertEqual(sum(pool.map(attempt, range(20))), 1)
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db:
                 self.assertEqual(db.execute("SELECT COUNT(*) FROM wall_messages").fetchone()[0], 1)
                 self.assertEqual(db.execute("SELECT post_count FROM wall_post_quotas").fetchone()[0], 1)
 

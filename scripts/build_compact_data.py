@@ -75,9 +75,19 @@ COUNTRIES = {
     "ukraine": "乌克兰", "argentina": "阿根廷", "chile": "智利",
     "south africa": "南非", "egypt": "埃及", "thailand": "泰国",
     "taiwan, china": "中国台湾", "hong kong, china": "中国香港",
-    "macao, china": "中国澳门",
+    "macao, china": "中国澳门", "taiwan": "中国台湾",
+    "hong kong": "中国香港", "macao": "中国澳门", "macau": "中国澳门",
+    "uae": "阿联酋", "united arab emirates": "阿联酋",
+    "republic of korea": "韩国", "russia": "俄罗斯",
+    "the netherlands": "荷兰", "england": "英国", "scotland": "英国",
 }
 ONLINE_WORDS = {"online", "virtual", "线上", "remote", "hybrid"}
+US_STATE_CODES = {
+    "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
+    "KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
+    "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT",
+    "VA","WA","WV","WI","WY","DC",
+}
 
 REQUIRED = ("title", "description", "sub", "confs")
 TIMEZONE_ALIAS_PATH = ROOT / "docs" / "timezone-alias.json"
@@ -225,7 +235,14 @@ def to_zh_place(text):
     if not text:
         return None
     s = str(text).strip()
-    if s.lower() in ONLINE_WORDS:
+    # 去掉括号补充（Hybrid / Online / Virtual）与 "and Online" 混合写法，只留主地点
+    s = re.sub(r"\s*\([^)]*\)\s*$", "", s).strip()
+    s = re.sub(r"\s+(?:and|&|/)\s+(?:online|virtual|hybrid)\s*$", "", s, flags=re.I).strip()
+    low = s.lower()
+    if low == "tbd" or not s:
+        return None
+    if low in ONLINE_WORDS or low in {"virtual conference", "online conference",
+                                      "virtual only", "online event"}:
         return "线上"
     if s in PLACE_ALIAS:
         return PLACE_ALIAS[s]
@@ -235,6 +252,8 @@ def to_zh_place(text):
     if not parts:
         return None
     country = COUNTRIES.get(parts[-1].lower())
+    if country is None and len(parts) >= 2 and parts[-1].upper() in US_STATE_CODES:
+        country = "美国"  # 州缩写是公开标准代码，只用于确定国家，城市名仍保留原文
     if country is None:
         return None
     city = parts[0] if len(parts) > 1 else ""

@@ -34,6 +34,11 @@
 | `test-fix-plan.md` | 测试修复进展（14→12 错）与剩余 12 项补丁 |
 | `acceptance-40.md` | 40 条逐条验收表与状态汇总 |
 | `full-audit-score.md` | **全方位实测评分报告**：13 项实测、五维重评、双口径总分、扣分明细、天花板与最短路径 |
+| `full-score-push-report.md` | **最新评分**：补分执行、A 账 98.6 / B 账 57、剩余硬边界与最短路径 |
+| `zh-preview.html` | 中文辅助层接入参考实现（术语 / 筛选 / 双时区 / 纠错 / 隐私，可运行） |
+| `responsive-report.md` / `perf-report.md` | 7 视口实测与性能基准（本机 Edge headless） |
+| `ci-red-green-report.md` / `status-refresh.md` | CI 红绿验证记录与状态重算说明 |
+| `doc-stats-check.md` | 历史硬编码数字自动核查清单 |
 | `deduction-ledger.md` | **逐分扣分台账**：A 账 22 单元（扣 4.2）、B 账 13 单元（扣 59）、11 条外部动作映射、两处口径修正、回分表 |
 | `corrections.md` | **重要**：此前不准确表述的更正记录，对外汇报以此为准 |
 | `unparsed-fields.md` | 中文辅助字段未覆盖清单（自动生成的原始数据） |

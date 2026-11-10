@@ -1,13 +1,18 @@
-# 测试基线修复进展与余项（第 23 条）
-## 已完成
-- 补齐 `icalendar` 依赖（7.3.0），2 个 `_FailedTest` 加载失败消失。
-- 新增 11 项单测（schema 兼容 5 项、校验规则 6 项），全部通过。
-- 全量 `unittest discover`：从 **82 项 / 14 错** 变为 **100 项 / 12 错**，错误数下降 2，未新增失败。
-## 剩余 12 项（按四类根因，补丁由维护者单独 PR 应用）
-| 类别 | 数量 | 建议补丁 |
-|---|---|---|
-| symlink 权限 | 1 | Windows 无管理员权限时 `skipTest` 并写明理由，不静默通过 |
-| sqlite 句柄占用 | 1 | 连接显式 `close()`；删除前短重试等待句柄释放 |
-| 临时目录清理 | 10 | 统一 `TemporaryDirectory()` 上下文管理器，避免 setUp 手动建、tearDown 手动删 |
-## 红线
-不得通过删除断言或放宽预期来「修好」测试；修复项单独 PR，不与数据格式改造混在一起。
+# 测试基线修复结果（E1，2026-11-10 实测）
+
+## 最终结果
+全量 `python -m unittest discover -s scripts -p 'test_*.py'`：**Ran 100 tests — OK (skipped=1)**，错误 **12 → 0**。
+
+## 三类根因与修复（不改任何断言）
+| 类别 | 数量 | 根因 | 修复 |
+|---|---:|---|---|
+| 分享卡片渲染 | 10 | `share_browser.mjs` 只探测 macOS/Linux 浏览器路径，Windows 报 `Share cards require Chrome/Chromium` | 新增 `defaultBrowser()`，按 `PROGRAMFILES(X86)` / `PROGRAMFILES` / `LOCALAPPDATA` 探测 Edge 与 Chrome；本机实测用 Edge 157 真跑通过，非跳过 |
+| sqlite 句柄 | 1 | `with sqlite3.connect(...) as db` 只管理事务不关闭连接，Windows 下 `limits.sqlite` 被占用导致临时目录清理失败 | 改用 `contextlib.closing` 显式关闭三处连接，保留原事务语义 |
+| symlink 权限 | 1 | Windows 未开开发人员模式，`WinError 1314` 无法创建符号链接 | 捕获 `OSError` 后 `skipTest` 并写明原因；断言与其它用例不变 |
+
+## 红线遵守情况
+未删除、未放宽任何断言；未修改业务代码（仅浏览器探测与测试资源管理）；
+10 项分享卡片/SEO 测试是真执行通过，唯一 skip 有明确环境理由。
+
+## 干净环境复现
+见 `docs/ci-templates/clean-env-check.md`；Windows 需 Chrome 或 Edge，Linux 由 CI 提供。

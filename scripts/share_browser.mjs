@@ -37,11 +37,26 @@ export async function stopBrowser(browser) {
   browser.removeListener('exit', onExit);
 }
 
-export async function launchShareBrowser() {
-  const chrome = process.env.CHROME_BINARY ?? process.env.CHROME_BIN ?? [
+function defaultBrowser() {
+  const candidates = [
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome', '/usr/bin/chromium',
-  ].find(existsSync);
+    '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser',
+  ];
+  if (process.platform === 'win32') {
+    const roots = [
+      process.env['PROGRAMFILES(X86)'], process.env.PROGRAMFILES,
+      process.env.LOCALAPPDATA,
+    ].filter(Boolean);
+    for (const root of roots) {
+      candidates.push(join(root, 'Microsoft', 'Edge', 'Application', 'msedge.exe'));
+      candidates.push(join(root, 'Google', 'Chrome', 'Application', 'chrome.exe'));
+    }
+  }
+  return candidates.find(existsSync);
+}
+
+export async function launchShareBrowser() {
+  const chrome = process.env.CHROME_BINARY ?? process.env.CHROME_BIN ?? defaultBrowser();
   if (!chrome) throw new Error('Share cards require Chrome/Chromium; set CHROME_BINARY if needed');
   const version = spawnSync(chrome, ['--version'], {encoding: 'utf8', timeout: 5000});
   if (version.error || version.status !== 0) {

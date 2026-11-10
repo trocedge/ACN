@@ -7,3 +7,9 @@
 3. 记录两次运行结果与耗时。
 ## 边界
 未改动任何既有 workflow；新增文件推送后自动生效。
+
+## 红绿验证已执行（2026-11-10，本地真实执行）
+
+`scripts/ci_red_green_check.py` 在真实源档案上临时把一处 `deadline` 改为 `NOT-A-DATE`：
+门禁退出码非 0 且 ERROR>0（红）→ `finally` 字节级恢复并 sha256 复核 → 重新执行门禁退出码 0（绿）。
+结果见 `docs/ci-red-green-report.md`。推送后 CI 将自动具备同等阻断能力。

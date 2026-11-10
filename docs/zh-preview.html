@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学术会议截止日 · 中文辅助层（接入参考实现）</title>
+<style>
+:root{--ink:#1b232c;--muted:#5f6b76;--line:#dfe4e8;--bg:#f7f8f7;--card:#fff;--accent:#0f6e56;--accent-soft:#e6f2ed;--warn:#a32d2d;--warn-soft:#fbeaea}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;font-size:14px;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 48px}
+header h1{font-size:22px;margin:0 0 6px;font-weight:600}
+header p{margin:0;color:var(--muted);font-size:13px}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;margin-left:8px}
+.guide,.privacy,.glossary{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:16px 0}
+.guide h2,.privacy h2,.glossary h2{font-size:15px;margin:0 0 8px;font-weight:600}
+.guide p,.privacy p{margin:4px 0;color:var(--muted);font-size:13px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 14px;min-height:44px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:16px 0}
+.filters label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+select,input[type=search]{font:inherit;min-height:44px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink);min-width:118px}
+input[type=search]{flex:1;min-width:180px}
+.meta{display:flex;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:12px;margin:0 0 12px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 12px}
+.row h3{margin:0 0 4px;font-size:16px;font-weight:600}
+.row .desc{color:var(--muted);font-size:13px;margin:0 0 10px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.tag.active{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.ev{border-top:1px dashed var(--line);padding:10px 0;display:grid;grid-template-columns:150px 1fr;gap:10px}
+.ev:first-of-type{border-top:0}
+.ev .yr{font-weight:600;font-size:13px}
+.ev .small{font-size:12px;color:var(--muted)}
+.dual{display:flex;flex-wrap:wrap;gap:8px}
+.dual span{background:var(--bg);border-radius:8px;padding:4px 10px;font-size:12px}
+.dual .bj{background:var(--accent-soft);color:var(--accent)}
+.dual .na{background:var(--warn-soft);color:var(--warn)}
+footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+footer a{color:var(--accent)}
+details summary{cursor:pointer;min-height:44px;display:flex;align-items:center}
+.glossary ul{margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:13px}
+#audit-result{display:none}
+@media(max-width:640px){.wrap{padding:14px 12px 36px}.filters{flex-direction:column;align-items:stretch}.filters label{width:100%}select,input[type=search]{width:100%}.ev{grid-template-columns:1fr}.row{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>学术会议截止日 · 中文辅助层<span class="badge">接入参考实现 · 非主站</span></h1>
+  <p>数据来自 <code>data/conferences.yml</code>（schema 1.1）。本页把字段契约与 10 份界面规格做成可运行样例，供界面层接入时对照。</p>
+</header>
+
+<div class="guide" id="guide">
+  <h2>第一次来？三个字段就够了</h2>
+  <p>① 截止时刻：必须连同时区一起看；② 北京时间：由数据层换算，未换算的不显示推测值；③ 状态：是数据快照，不是实时值。</p>
+  <p>本站汇总公开的学术会议信息，关键时间请以会议官网为准。</p>
+  <button id="guideClose">知道了，不再提示</button>
+</div>
+
+<div class="filters">
+  <label>学科<select id="fSub"></select></label>
+  <label>年份<select id="fYear"></select></label>
+  <label>CCF 等级<select id="fRank"></select></label>
+  <label>状态<select id="fStatus"></select></label>
+  <label>搜索<input type="search" id="fQuery" placeholder="会议名或简介关键词"></label>
+  <button id="btnHistory">查看历史</button>
+  <button id="btnGlossary">名词解释</button>
+</div>
+
+<div class="meta">
+  <span id="mCount">载入中…</span><span id="mPerf"></span><span id="mAsOf"></span>
+</div>
+
+<div id="list"></div>
+<div style="text-align:center;margin:18px 0"><button id="btnMore" class="primary">加载更多</button></div>
+
+<div class="glossary" id="glossary" style="display:none">
+  <h2>名词解释</h2>
+  <ul id="terms"></ul>
+</div>
+
+<div class="privacy">
+  <details>
+    <summary>隐私与第三方资源说明</summary>
+    <p>本页不要求注册、不采集学生身份信息；本地存储仅用于「首次引导已关闭」偏好。</p>
+    <p>主站已核实的第三方资源：Google AdSense（ca-pub-2114972416819347，广告）、Google Tag Manager / gtag（G-RY374M6FJ8，访问统计）；privacy-modal.js 为第一方组件。</p>
+    <p>关闭统计的方式：浏览器阻止第三方 Cookie、使用隐私模式或广告拦截扩展。页面自身未提供开关，不做未核实承诺。</p>
+  </details>
+</div>
+
+<footer>
+  <p>本页数据由社区人工维护，可能存在滞后；关键时间请以会议官网为准。状态快照时刻：<span id="fAsOf">—</span>（非实时）。</p>
+  <p><a id="feedback" href="#" target="_blank" rel="noopener">发现数据有误？提交纠错</a> ｜ <a href="README.md">文档索引</a> ｜ <a href="field-contract.md">字段契约</a></p>
+</footer>
+
+<pre id="audit-result">pending</pre>
+</div>
+
+<script>
+(function () {
+  var DATA = null, GLOSS = null, I18N = null, INDEX = null;
+  var PAGE = 50, shown = 50, history = false;
+  var t0 = performance.now(), loadMs = 0, filterMs = 0;
+  var byId = function (id) { return document.getElementById(id); };
+  var esc = function (s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+  var opt = function (sel, values, all) {
+    var html = '<option value="">' + all + '</option>';
+    values.forEach(function (v) { html += '<option value="' + esc(v) + '">' + esc(v) + '</option>'; });
+    sel.innerHTML = html;
+  };
+  var txt = function (v, fallback) { return (v === null || v === undefined || v === '') ? fallback : v; };
+
+  function dual(ev) {
+    var parts = [];
+    (ev.timeline || []).forEach(function (p) {
+      var raw = txt(p.deadline, '尚未公布') + ' · ' + txt(ev.timezone, '时区未列');
+      var right, cls = 'bj';
+      if (p.deadline_beijing) { right = '北京时间 ' + p.deadline_beijing; }
+      else if (p.deadline_beijing_dst) { right = '北京时间 ' + p.deadline_beijing_dst + '（按夏令时推算）'; }
+      else if (p.deadline === 'TBD') { right = '尚未公布'; cls = 'na'; }
+      else { right = '需按具体日期换算'; cls = 'na'; }
+      parts.push('<div class="dual"><span>' + esc(raw) + '</span><span class="' + cls + '">' + esc(right) + '</span></div>');
+    });
+    return parts.length ? parts.join('') : '<div class="dual"><span class="na">暂无截止日信息</span></div>';
+  }
+
+  function filtered() {
+    var t = performance.now();
+    var sub = byId('fSub').value, year = byId('fYear').value, rank = byId('fRank').value,
+        status = byId('fStatus').value, q = byId('fQuery').value.trim().toLowerCase();
+    var rows = DATA.filter(function (r) {
+      if (sub && r.sub !== sub) return false;
+      if (rank && String(r.ccf || '') !== rank) return false;
+      var evs = r.events || [];
+      if (year && !evs.some(function (e) { return String(e.year) === year; })) return false;
+      if (!history && !evs.some(function (e) { return e.status === 'active'; })) return false;
+      if (status && !evs.some(function (e) { return e.status === status; })) return false;
+      if (q && (String(r.title || '') + ' ' + String(r.description || '')).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    rows.sort(function (a, b) { return String(a.sort_key || '').localeCompare(String(b.sort_key || '')); });
+    filterMs = performance.now() - t;
+    return rows;
+  }
+
+  function render() {
+    var rows = filtered(), slice = rows.slice(0, shown), html = [];
+    slice.forEach(function (r) {
+      var evs = (r.events || []).filter(function (e) { return history || e.status === 'active'; }).slice(0, 3);
+      html.push('<div class="row"><h3>' + esc(r.title) + '</h3><p class="desc">' + esc(r.description) + '</p>');
+      html.push('<div class="tags"><span class="tag">' + esc(r.sub) + '</span>');
+      if (r.ccf) html.push('<span class="tag">CCF ' + esc(r.ccf) + '</span>');
+      html.push('<span class="tag">' + esc((r.events || [])[0] ? r.events[0].status : '') + '</span></div>');
+      evs.forEach(function (e) {
+        html.push('<div class="ev"><div><div class="yr">' + esc(e.year) + ' · ' + esc(e.id) + '</div>');
+        html.push('<div class="small">' + esc(txt(e.date_zh, e.date || '日期未列')) + '</div>');
+        html.push('<div class="small">' + esc(txt(e.place_zh, e.place || '地点未列')) + '</div></div>');
+        html.push('<div>' + dual(e) + '</div></div>');
+      });
+      html.push('</div>');
+    });
+    byId('list').innerHTML = html.length ? html.join('') : '<div class="row">没有符合条件的会议。</div>';
+    byId('mCount').textContent = '显示 ' + Math.min(shown, rows.length) + ' / ' + rows.length + ' 个会议（共 ' + DATA.length + ' 条）';
+    byId('mPerf').textContent = '筛选 ' + filterMs.toFixed(1) + ' ms ｜ 载入 ' + loadMs.toFixed(1) + ' ms';
+    byId('btnMore').style.display = rows.length > shown ? '' : 'none';
+    audit(rows.length);
+  }
+
+  function audit(count) {
+    var body = parseFloat(getComputedStyle(document.body).fontSize) || 14;
+    var btn = byId('btnMore');
+    var hot = btn ? btn.getBoundingClientRect().height : 44;
+    var res = {
+      viewport: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      noOverflow: document.documentElement.scrollWidth <= window.innerWidth + 2,
+      bodyFont: body, fontOk: body >= 12,
+      tapHeight: Math.round(hot), tapOk: hot >= 44,
+      rowsRendered: document.querySelectorAll('.row').length,
+      filtered: count, total: DATA ? DATA.length : 0,
+      filterMs: Number(filterMs.toFixed(2)), loadMs: Number(loadMs.toFixed(2))
+    };
+    byId('audit-result').textContent = JSON.stringify(res);
+  }
+
+  function bind() {
+    ['fSub', 'fYear', 'fRank', 'fStatus', 'fQuery'].forEach(function (id) {
+      byId(id).addEventListener('input', function () { shown = PAGE; render(); });
+    });
+    byId('btnHistory').addEventListener('click', function () {
+      history = !history; this.textContent = history ? '只看进行中' : '查看历史'; shown = PAGE; render();
+    });
+    byId('btnMore').addEventListener('click', function () { shown += PAGE; render(); });
+    byId('btnGlossary').addEventListener('click', function () {
+      var g = byId('glossary'); g.style.display = g.style.display === 'none' ? '' : 'none';
+    });
+    if (localStorage.getItem('acn-guide-closed') === '1') byId('guide').style.display = 'none';
+    byId('guideClose').addEventListener('click', function () {
+      try { localStorage.setItem('acn-guide-closed', '1'); } catch (e) {}
+      byId('guide').style.display = 'none';
+    });
+  }
+
+  Promise.all([
+    fetch('../data/conferences.json').then(function (r) { return r.json(); }),
+    fetch('../data/glossary.json').then(function (r) { return r.json(); }),
+    fetch('../data/i18n/zh.json').then(function (r) { return r.json(); }),
+    fetch('../data/filter-index.json').then(function (r) { return r.json(); })
+  ]).then(function (all) {
+    DATA = all[0]; GLOSS = all[1]; I18N = all[2]; INDEX = all[3];
+    loadMs = performance.now() - t0;
+    var d = INDEX.dimensions || {};
+    opt(byId('fSub'), d.sub || [], '全部学科');
+    opt(byId('fYear'), (d.year || []).map(String), '全部年份');
+    opt(byId('fRank'), d.rank_ccf || [], '全部等级');
+    opt(byId('fStatus'), d.status || [], '全部状态');
+    var terms = (GLOSS.terms || []).map(function (t) {
+      return '<li><b>' + esc(t.term) + '</b>：' + esc(t.meaning) + '（易错：' + esc(t.pitfall) + '）</li>';
+    });
+    byId('terms').innerHTML = terms.join('');
+    var asOf = DATA.length ? DATA[0].status_as_of : '—';
+    byId('mAsOf').textContent = '状态快照 ' + asOf;
+    byId('fAsOf').textContent = asOf;
+    var issue = 'https://github.com/trocedge/ACN/issues/new?title=' +
+      encodeURIComponent('[数据纠错] ') + '&body=' +
+      encodeURIComponent('会议 id：\n原值：\n建议值：\n来源链接（会议官网）：');
+    byId('feedback').href = issue;
+    bind();
+    render();
+  }).catch(function (err) {
+    byId('audit-result').textContent = JSON.stringify({ error: String(err) });
+    byId('mCount').textContent = '数据载入失败：' + String(err);
+  });
+}());
+</script>
+</body>
+</html>
