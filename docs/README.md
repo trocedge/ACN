@@ -61,6 +61,7 @@
 | `ci-templates/data-check.yml` | GitHub Actions 数据校验工作流模板 |
 | `ci-templates/healthcheck.py` | 数据新鲜度与链接可用性探活脚本模板 |
 | `pr-description.md` / `pr-summary.md` | 可粘贴的 PR 描述与评审一页纸 |
+| `push-and-pr-guide.md` | 推送分支与提交 PR 的通用指引（含认证方式与报错速查） |
 | `decisions.md` / `field-contract-signoff.md` / `collaboration-raci.md` | 待勾选的决策表、字段确认表、任务分派表 |
 | `candidate-README.zh-CN.md` / `readme-zh-entry.md` | 中文第一入口候选与可粘贴片段 |
 | `upstream-sync.md` / `rollback-drill.md` | 上游同步约定与回退演练 |
