@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "source": "docs/glossary.md",
+  "terms": [
+    {
+      "term": "CCF",
+      "meaning": "中国计算机学会对会议/期刊的分级",
+      "pitfall": "不是难度排名"
+    },
+    {
+      "term": "rank.ccf",
+      "meaning": "CCF 推荐列表等级 A/B/C",
+      "pitfall": "等级高不等于适合自己"
+    },
+    {
+      "term": "sub",
+      "meaning": "学科代码，如 AI/DB/SE",
+      "pitfall": "是分类标签不是专业名称"
+    },
+    {
+      "term": "dblp",
+      "meaning": "计算机文献索引站检索后缀",
+      "pitfall": "不是投稿入口"
+    },
+    {
+      "term": "deadline",
+      "meaning": "投稿截止时刻",
+      "pitfall": "必须连同 timezone 一起看"
+    },
+    {
+      "term": "TBD",
+      "meaning": "官方尚未公布",
+      "pitfall": "不是没有截止日，也不是 0 点"
+    },
+    {
+      "term": "AoE",
+      "meaning": "Anywhere on Earth，UTC-12",
+      "pitfall": "与北京时间差 20 小时"
+    },
+    {
+      "term": "PT",
+      "meaning": "美国太平洋时间，含夏令时",
+      "pitfall": "不能按固定时差口算"
+    },
+    {
+      "term": "status",
+      "meaning": "数据层标注的届次状态",
+      "pitfall": "是生成时刻快照，不是实时值"
+    }
+  ],
+  "subjects": {
+    "AI": "人工智能",
+    "DB": "数据库/数据挖掘/信息检索",
+    "SE": "软件工程/操作系统/程序设计语言",
+    "NW": "网络",
+    "SC": "网络与系统安全",
+    "DS": "体系结构/并行/存储",
+    "CT": "计算理论",
+    "CG": "图形学",
+    "HI": "人机交互",
+    "MX": "交叉/新兴方向"
+  }
+}

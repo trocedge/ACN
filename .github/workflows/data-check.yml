@@ -1,0 +1,27 @@
+name: data-check
+# 新增工作流：只校验源档案，不改动既有 deploy/merge_check/mcp_check/pre-commit
+on:
+  pull_request:
+    paths: ['conference/**/*.yml', 'scripts/validate_data.py', 'scripts/build_compact_data.py', 'data/conferences.yml']
+  push:
+    branches: [main]
+    paths: ['conference/**/*.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install PyYAML
+      - name: 源档案校验（ERROR 非 0 即阻断）
+        run: python scripts/validate_data.py --source --json validation.json
+      - name: 转换校验
+        run: python scripts/build_compact_data.py --check
+      - name: 上传报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: data-validation-report, path: validation.json}
