@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.1",
+  "errors": 0,
+  "warnings": 1,
+  "error_samples": [],
+  "warning_samples": [
+    "录取率档案 23 份未与会议标题直接匹配（建议建立 id 级关联）"
+  ],
+  "passed": true,
+  "source_files": 383,
+  "entries": 383,
+  "output_entries": 383,
+  "accept_broken": 23
+}
