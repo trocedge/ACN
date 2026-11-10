@@ -30,7 +30,13 @@
 | `optimization-plan-40.md` | 针对 40 条差距的逐条详细方案、验收与增量提示词（含总指令） |
 | `implementation-report.md` | 20 条缺点逐条落地状态、验证数字、诚实边界、待确认 5 项 |
 | `gap-to-full-score.md` | 四维度各 10 条（共 40 条）「距离满分差在哪」与补齐动作 |
-| `test-baseline-analysis.md` | 82 项测试中 14 项既有错误的根因分类与修复建议 |
+| `test-baseline-analysis.md` | 既有测试错误的根因分类与修复建议 |
+| `test-fix-plan.md` | 测试修复进展（14→12 错）与剩余 12 项补丁 |
+| `acceptance-40.md` | 40 条逐条验收表与状态汇总 |
+| `corrections.md` | **重要**：此前不准确表述的更正记录，对外汇报以此为准 |
+| `unparsed-fields.md` | 中文辅助字段未覆盖清单（自动生成的原始数据） |
+| `timeline-order-observations.md` | 校验 WARN 的 3 处观察项明细 |
+| `rollback-drill.md` | 回退演练记录 |
 
 ## 开发与协作
 
@@ -47,6 +53,11 @@
 |---|---|
 | `ci-templates/data-check.yml` | GitHub Actions 数据校验工作流模板 |
 | `ci-templates/healthcheck.py` | 数据新鲜度与链接可用性探活脚本模板 |
+| `pr-description.md` / `pr-summary.md` | 可粘贴的 PR 描述与评审一页纸 |
+| `decisions.md` / `field-contract-signoff.md` / `collaboration-raci.md` | 待勾选的决策表、字段确认表、任务分派表 |
+| `candidate-README.zh-CN.md` / `readme-zh-entry.md` | 中文第一入口候选与可粘贴片段 |
+| `upstream-sync.md` / `rollback-drill.md` | 上游同步约定与回退演练 |
+| `ui-spec-*.md` | 10 份界面接入规格（术语、中文、双时区、筛选、默认视图、响应式、分页、页脚、纠错、隐私） |
 
 ---
 

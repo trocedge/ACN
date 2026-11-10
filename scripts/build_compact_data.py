@@ -20,6 +20,7 @@
 """
 import argparse
 import io
+import json
 import re
 import sys
 from collections import Counter
@@ -52,7 +53,7 @@ MONTHS = {
     "december": 12, "dec": 12,
 }
 # 英文日期范围，例：June 12-17, 2022 / June 12, 2022
-DATE_EN = re.compile(r"^([A-Za-z]+)\s+(\d{1,2})(?:\s*-\s*(\d{1,2}))?,?\s*(\d{4})$")
+DATE_EN = re.compile(r"^([A-Za-z]+)\.?\s+(\d{1,2})(?:\s*-\s*(\d{1,2}))?,?\s*(\d{4})(?:\s*[\[(].*)?$")
 
 # 国家/地区白名单：只翻译能确定的国家名，城市名保留原文（不编造中文译名）
 COUNTRIES = {
@@ -64,12 +65,24 @@ COUNTRIES = {
     "south korea": "韩国", "korea": "韩国", "india": "印度",
     "austria": "奥地利", "sweden": "瑞典", "portugal": "葡萄牙",
     "greece": "希腊", "poland": "波兰", "israel": "以色列",
-    "brazil": "巴西", "mexico": "墨西哥", "taiwan, china": "中国台湾",
-    "hong kong, china": "中国香港", "macao, china": "中国澳门",
+    "brazil": "巴西", "mexico": "墨西哥", "cyprus": "塞浦路斯",
+    "denmark": "丹麦", "ireland": "爱尔兰", "new zealand": "新西兰",
+    "turkey": "土耳其", "czech republic": "捷克", "finland": "芬兰",
+    "vietnam": "越南", "belgium": "比利时", "malaysia": "马来西亚",
+    "estonia": "爱沙尼亚", "norway": "挪威", "croatia": "克罗地亚",
+    "slovenia": "斯洛文尼亚", "serbia": "塞尔维亚", "romania": "罗马尼亚",
+    "luxembourg": "卢森堡", "iceland": "冰岛", "hungary": "匈牙利",
+    "ukraine": "乌克兰", "argentina": "阿根廷", "chile": "智利",
+    "south africa": "南非", "egypt": "埃及", "thailand": "泰国",
+    "taiwan, china": "中国台湾", "hong kong, china": "中国香港",
+    "macao, china": "中国澳门",
 }
 ONLINE_WORDS = {"online", "virtual", "线上", "remote", "hybrid"}
 
 REQUIRED = ("title", "description", "sub", "confs")
+TIMEZONE_ALIAS_PATH = ROOT / "docs" / "timezone-alias.json"
+PLACE_ALIAS_PATH = ROOT / "docs" / "place-aliases.yml"
+TBD_REVIEW_DAYS = 30
 
 
 def utc_offset(tz):
@@ -83,6 +96,55 @@ def utc_offset(tz):
     if m:
         return (1 if m.group(1) == "+" else -1) * int(m.group(2))
     return None
+
+
+def load_timezone_alias():
+    """读取时区别名表，仅用于归一化建议，不改写源数据原值。"""
+    if not TIMEZONE_ALIAS_PATH.is_file():
+        return {}
+    try:
+        return json.loads(io.open(TIMEZONE_ALIAS_PATH, encoding="utf-8").read()) or {}
+    except Exception:
+        return {}
+
+
+def load_place_alias():
+    """读取人工确认的地点译名表；脚本只查表，不做推测翻译。"""
+    if not PLACE_ALIAS_PATH.is_file():
+        return {}
+    try:
+        data = yaml.safe_load(io.open(PLACE_ALIAS_PATH, encoding="utf-8").read()) or {}
+        return data.get("cities", {}) or {}
+    except Exception:
+        return {}
+
+
+PLACE_ALIAS = load_place_alias()
+
+
+def pacific_offset(iso_local):
+    """按具体日期判定美国太平洋时区偏移：夏令时 UTC-7，其余 UTC-8。
+
+    规则：3 月第二个周日 02:00 起至 11 月第一个周日 02:00 止。
+    只用于 PT 条目的推算值，结果标注 dst_basis，不写成官方公布时间。
+    """
+    dt = parse_iso(iso_local)
+    if dt is None:
+        return None
+    def nth_sunday(year, month, n):
+        first = datetime(year, month, 1)
+        return first + timedelta(days=(6 - first.weekday()) % 7 + 7 * (n - 1))
+    start = nth_sunday(dt.year, 3, 2).replace(hour=2)
+    end = nth_sunday(dt.year, 11, 1).replace(hour=2)
+    return -7 if start <= dt < end else -8
+
+
+def make_sort_key(status, timeline):
+    """行式列表排序键：状态优先 + 最晚截止时刻，只用已有字段计算。"""
+    rank = {"active": 0, "tbd": 1, "past": 2, "unknown": 3}.get(status, 3)
+    latest = max([str(p.get("deadline_beijing") or p.get("deadline_beijing_dst")
+                      or p.get("deadline") or "") for p in timeline] or [""])
+    return "%d|%s" % (rank, latest)
 
 
 def norm_deadline(value):
@@ -139,6 +201,13 @@ def to_zh_date(text):
         return s  # 原本就是中文，原样保留
     m = DATE_EN.match(s)
     if not m:
+        # 跨月区间，例：March 31-April 2, 2027 / June 28 - July 2, 2027
+        cm = re.match(r"^([A-Za-z]+)\.?\s+(\d{1,2})\s*-\s*([A-Za-z]+)\.?\s+(\d{1,2}),?\s*(\d{4})$", s)
+        if cm:
+            m1, m2 = MONTHS.get(cm.group(1).lower()), MONTHS.get(cm.group(3).lower())
+            if m1 and m2:
+                return "%s 年 %d 月 %s 日 - %d 月 %s 日" % (
+                    cm.group(5), m1, cm.group(2), m2, cm.group(4))
         return None
     month = MONTHS.get(m.group(1).lower())
     if month is None:
@@ -158,6 +227,8 @@ def to_zh_place(text):
     s = str(text).strip()
     if s.lower() in ONLINE_WORDS:
         return "线上"
+    if s in PLACE_ALIAS:
+        return PLACE_ALIAS[s]
     if "年" not in s and re.search(r"[\u4e00-\u9fff]", s):
         return s  # 已含中文，原样保留
     parts = [p.strip() for p in s.split(",") if p.strip()]
@@ -176,7 +247,7 @@ def compute_status(timeline, now):
     优先用换算后的北京时间；无换算值时退化为本地时间直比，并在 status_basis 标注，
     避免把未换算时间伪装成已换算。TBD 不参与比较。
     """
-    parsed, naive = [], []
+    parsed, naive, pt_seen = [], [], []
     has_tbd = False
     for p in timeline:
         dl = p.get("deadline")
@@ -187,11 +258,17 @@ def compute_status(timeline, now):
         dt = parse_iso(bj) if bj else None
         if dt is not None:
             parsed.append(dt)
-        else:
-            local_dt = parse_iso(dl)
-            if local_dt is not None:
-                naive.append(local_dt)
-    basis = "beijing" if parsed else ("local_naive" if naive else "none")
+            continue
+        dst = p.get("deadline_beijing_dst")
+        ddt = parse_iso(dst) if dst else None
+        if ddt is not None:
+            parsed.append(ddt)
+            pt_seen.append(True)
+            continue
+        local_dt = parse_iso(dl)
+        if local_dt is not None:
+            naive.append(local_dt)
+    basis = ("pt_dst" if pt_seen else "beijing") if parsed else ("local_naive" if naive else "none")
     pool = parsed or naive
     if not pool:
         return ("tbd" if has_tbd else "unknown"), basis
@@ -255,6 +332,19 @@ def convert(entries, stats, now):
                     stats["bj_converted"] += 1
                 elif dl and dl != "TBD":
                     stats["bj_unresolved"] += 1
+                # PT 类：按日期判夏令时，产出独立推算字段，不覆盖确定性换算值
+                if str(tz).strip() == "PT":
+                    pdst = pacific_offset(dl)
+                    new_point["deadline_beijing_dst"] = to_beijing(dl, pdst)
+                    new_point["dst_basis"] = "pt_dst" if pdst is not None else "unknown"
+                    stats["pt_dst"] += 1
+                # TBD：只补可推导的跟踪信息，不推测任何日期
+                if dl == "TBD":
+                    new_point["tbd_review"] = (now + timedelta(days=TBD_REVIEW_DAYS)).strftime("%Y-%m-%d")
+                    new_point["tbd_review_note"] = "建议复查日（非官方公布）"
+                    new_point["tbd_source"] = conf.get("link")
+                    new_point["tbd_owner"] = "data-maintainer"
+                    stats["tbd_tracked"] += 1
                 timeline.append(new_point)
 
             status, basis = compute_status(timeline, now)
@@ -283,6 +373,7 @@ def convert(entries, stats, now):
             for k, v in conf.items():
                 if k not in event and k not in ("timeline", "timezone"):
                     event[k] = v
+            event["sort_key"] = make_sort_key(status, timeline)
             events.append(event)
 
         row = {
@@ -295,6 +386,9 @@ def convert(entries, stats, now):
             "dblp": item.get("dblp"),
             "source_file": str(path.relative_to(ROOT)).replace("\\", "/"),
             "events": events,                    # confs → events
+            "sort_key": make_sort_key(
+                min((e["status"] for e in events), key=lambda x: {"active":0,"tbd":1,"past":2,"unknown":3}.get(x,3), default="unknown"),
+                [p for e in events for p in e["timeline"]]),
         }
         for k, v in item.items():
             if k not in row and k != "confs":
@@ -326,28 +420,23 @@ def validate(rows, stats):
 
 
 def check_accept_rates():
-    """检查录取率数据与会议档案的标题级关联，返回断链数量与样例。"""
+    """检查录取率档案与会议档案的关联，返回 (总数, 未匹配列表, 会议档案数)。
+
+    仓库实际以文件名 stem 关联：accept_rates/AI/nips.yml 对应 conference/AI/nips.yml，
+    后者 title 却是 NeurIPS。只按标题比会产生大量假阳性，故以 stem 为主判据。
+    """
     if not ACCEPT_DIR.is_dir():
         return 0, [], 0
-    titles = set()
+    stems = set()
     for path in SRC_DIR.glob("**/*.yml"):
-        if path.name == "types.yml":
-            continue
-        try:
-            data = yaml.safe_load(io.open(path, encoding="utf-8").read())
-        except Exception:
-            continue
-        if isinstance(data, list):
-            for item in data:
-                if isinstance(item, dict) and item.get("title"):
-                    titles.add(str(item["title"]).strip().lower())
+        if path.name != "types.yml":
+            stems.add(path.stem.strip().lower())
     total, broken = 0, []
     for path in sorted(ACCEPT_DIR.glob("**/*.yml")):
         total += 1
-        stem = path.stem.strip().lower()
-        if stem not in {t.lower() for t in titles}:
+        if path.stem.strip().lower() not in stems:
             broken.append(str(path.relative_to(ROOT)).replace("\\", "/"))
-    return total, broken, len(titles)
+    return total, broken, len(stems)
 
 
 def main():
@@ -375,15 +464,19 @@ def main():
         stats["bj_converted"], stats["bj_unresolved"]))
     print("状态分布      : active %d / past %d / tbd %d / unknown %d" % (
         stats["status_active"], stats["status_past"], stats["status_tbd"], stats["status_unknown"]))
-    print("状态依据      : 北京时间 %d / 本地时间近似 %d / 无日期 %d" % (
-        stats["basis_beijing"], stats["basis_local_naive"], stats["basis_none"]))
+    print("状态依据      : 北京时间 %d / 夏令时推算 %d / 本地近似 %d / 无日期 %d" % (
+        stats["basis_beijing"], stats["basis_pt_dst"],
+        stats["basis_local_naive"], stats["basis_none"]))
     print("中文字段覆盖  : 日期 %d/%d，地点 %d/%d（未覆盖留空，不编造）" % (
         stats["date_zh_ok"], stats["editions"], stats["place_zh_ok"], stats["editions"]))
     acc_total, acc_broken, acc_titles = check_accept_rates()
-    print("录取率关联    : 文件 %d 份 / 会议标题 %d 个 / 未直接匹配 %d 份" % (
+    print("录取率关联    : 文件 %d 份 / 会议档案标识 %d 个 / 未匹配 %d 份" % (
         acc_total, acc_titles, len(acc_broken)))
     if acc_broken:
         print("                样例：%s" % ", ".join(acc_broken[:3]))
+    print("PT 夏令时推算 : %d 条（独立字段，不覆盖确定性换算）" % stats["pt_dst"])
+    print("TBD 跟踪字段  : %d 条" % stats["tbd_tracked"])
+    print("别名表        : 时区 %d 项 / 地点 %d 项" % (len(load_timezone_alias()), len(PLACE_ALIAS)))
     print("AoE 原值保留  : 是（UTC-12，绝不替换成 Asia/Shanghai）")
     print("校验问题      : %s" % (problems if problems else "无"))
 

@@ -1,0 +1,23 @@
+# 人工确认的地点译名表：脚本只查表，不做推测翻译。
+# 未收录写法一律返回 null 并计入未覆盖清单，不编造译名。
+# 涉及中国地区的表述遵循官方口径。
+cities:
+  "Taipei, Taiwan": "中国台湾 · 台北"
+  "Hong Kong": "中国香港"
+  "Macao": "中国澳门"
+  "Xi'an, China": "中国 · 西安"
+  "Beijing, China": "中国 · 北京"
+  "Shanghai, China": "中国 · 上海"
+  "San Diego, California": "美国 · San Diego"
+  "Limassol, Cyprus": "塞浦路斯 · Limassol"
+  "Copenhagen, Denmark": "丹麦 · Copenhagen"
+  "Dublin, Ireland": "爱尔兰 · Dublin"
+  "Auckland, New Zealand": "新西兰 · Auckland"
+  "Istanbul, Turkey": "土耳其 · Istanbul"
+  "Prague, Czech Republic": "捷克 · Prague"
+  "Helsinki, Finland": "芬兰 · Helsinki"
+  "Hanoi, Vietnam": "越南 · Hanoi"
+  "Kuala Lumpur, Malaysia": "马来西亚 · Kuala Lumpur"
+  "Tallinn, Estonia": "爱沙尼亚 · Tallinn"
+  "Ghent, Belgium": "比利时 · Ghent"
+  "Trondheim, Norway": "挪威 · Trondheim"

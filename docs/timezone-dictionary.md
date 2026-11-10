@@ -1,5 +1,8 @@
 # ACN 时区字典与换算规范
 
+> 数字与结论更正见 `docs/corrections.md`；对外汇报以更正记录为准。
+
+
 > 版本：v1.0 ｜ 日期：2026-11-10
 > 数据来源：仓库 383 份会议档案中 2357 个届次的 `timezone` 字段实测统计
 > 配套：`docs/field-contract.md`、`scripts/build_compact_data.py`

@@ -1,0 +1,33 @@
+{
+  "说明": "仅用于归一化建议与换算依据，源档案 timezone 原值一律保留",
+  "统计口径": "conference/**/*.yml 中 confs[].timezone，共 2357 条",
+  "aliases": {
+    "AoE": "UTC-12",
+    "UTC": "UTC+0",
+    "UTC+0": "UTC+0",
+    "UTC-12": "UTC-12"
+  },
+  "fixed_offset": {
+    "AoE": -12,
+    "UTC": 0,
+    "UTC+0": 0,
+    "UTC-12": -12
+  },
+  "dynamic": {
+    "PT": "按日期判夏令时：3月第二个周日~11月第一个周日 UTC-7，其余 UTC-8"
+  },
+  "observed": {
+    "AoE": 1540,
+    "UTC-12": 288,
+    "UTC-7": 94,
+    "UTC+0": 74,
+    "UTC-8": 73,
+    "UTC": 72,
+    "UTC-4": 55,
+    "UTC-5": 49,
+    "UTC+8": 38,
+    "PT": 35,
+    "UTC-10": 12,
+    "UTC+1": 9
+  }
+}

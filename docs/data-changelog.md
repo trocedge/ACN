@@ -1,5 +1,8 @@
 # ACN 数据格式变更日志
 
+> 数字与结论更正见 `docs/corrections.md`；对外汇报以更正记录为准。
+
+
 > 记录 `data/conferences.yml` 结构变化，供展示层判断兼容性与迁移。
 > 字段契约：`docs/field-contract.md` ｜ 时区规范：`docs/timezone-dictionary.md`
 

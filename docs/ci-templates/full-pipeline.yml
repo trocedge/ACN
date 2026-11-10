@@ -1,0 +1,22 @@
+# 完整流水线骨架（第 27 条；仅模板，不替代现行配置）
+name: full-pipeline-template
+on:
+  workflow_dispatch:
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install PyYAML icalendar jsonschema
+      - name: 1 校验源档案
+        run: python scripts/validate_data.py --source
+      - name: 2 老链路
+        run: python scripts/build_data.py
+      - name: 3 新表
+        run: python scripts/build_compact_data.py
+      - name: 4 完整校验
+        run: python scripts/validate_data.py --json validation.json
+      - name: 5 部署（依赖第 26 条拍板）
+        run: echo "部署步骤由工程负责人接入"

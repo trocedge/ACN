@@ -1,0 +1,19 @@
+# 方案 B：CI 生成并把产物加入 .gitignore（拍板后启用）
+# 启用前必须同步更新 generated-artifacts-policy.md 与前端读取路径
+name: artifact-b
+on:
+  push:
+    branches: [main]
+    paths: ['conference/**/*.yml']
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install PyYAML
+      - run: python scripts/validate_data.py --source
+      - run: python scripts/build_compact_data.py
+      - run: python scripts/validate_data.py
+      - run: python scripts/build_data.py

@@ -121,12 +121,19 @@ def validate_source(rep):
     dup = [k for k, v in Counter(ids).items() if v > 1]
     if dup:
         rep.err("源档案存在重复 id %d 个：%s" % (len(dup), dup[:5]))
+    # 扩展观察规则（08）：全部为 WARN，观察一个周期后再评估是否升 ERROR
+    validate_extended(rep, files)
     rep.entries = entry_count
     rep.source_ids = len(ids)
 
-    # 录取率档案与会议标题的关联检查：只提示，不阻断
+    # 录取率档案与会议档案的关联检查：以「文件名 stem」为主判据。
+    # 仓库实际约定是 accept_rates/<学科>/<stem>.yml 对应 conference/<学科>/<stem>.yml，
+    # 会议 title 可能不同（如 nips.yml 的 title 是 NeurIPS），因此不能只按标题匹配。
+    # 映射表的存在与否只作提示，不作为断链依据。
+    stems = set()
     titles = set()
     for path in files:
+        stems.add(path.stem.strip().lower())
         data = load_yaml(path)
         if isinstance(data, list):
             for item in data:
@@ -135,12 +142,51 @@ def validate_source(rep):
     broken = []
     if ACCEPT_DIR.is_dir():
         for path in sorted(ACCEPT_DIR.glob("**/*.yml")):
-            if path.stem.strip().lower() not in titles:
+            stem = path.stem.strip().lower()
+            if stem not in stems and stem not in titles:
                 broken.append(str(path.relative_to(ROOT)).replace("\\", "/"))
     rep.accept_files = len(list(ACCEPT_DIR.glob("**/*.yml"))) if ACCEPT_DIR.is_dir() else 0
     rep.accept_broken = broken
     if broken:
-        rep.warn("录取率档案 %d 份未与会议标题直接匹配（建议建立 id 级关联）" % len(broken))
+        rep.warn("录取率档案 %d 份未找到同名会议档案（建议建立 id 级关联）" % len(broken))
+
+
+def validate_extended(rep, files):
+    """五类观察性规则：只提示不阻断，避免把历史数据一次性判死。"""
+    counts = Counter()
+    for path in files:
+        rel = str(path.relative_to(ROOT)).replace("\\", "/")
+        data = load_yaml(path)
+        if not isinstance(data, list):
+            continue
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            rank = item.get("rank") or {}
+            ccf = (rank.get("ccf") if isinstance(rank, dict) else None)
+            if ccf and str(ccf).upper() not in ("A", "B", "C", "N"):
+                counts["rank_enum"] += 1
+            for conf in (item.get("confs") or []):
+                if not isinstance(conf, dict):
+                    continue
+                year = conf.get("year")
+                if year is not None and not (1990 <= int(year) <= 2035 if str(year).isdigit() else True):
+                    counts["year_range"] += 1
+                link = str(conf.get("link") or "")
+                if link and not re.match(r"^https?://", link):
+                    counts["link_format"] += 1
+                times = [str(p.get("deadline")) for p in (conf.get("timeline") or [])
+                         if isinstance(p, dict) and p.get("deadline") not in (None, "TBD", "")]
+                if times != sorted(times):
+                    counts["timeline_order"] += 1
+                if len(times) != len(set(times)):
+                    counts["duplicate_timeline"] += 1
+    for key, label in (("rank_enum", "rank.ccf 枚举异常"), ("year_range", "year 超出合理范围"),
+                       ("link_format", "link 非 http(s) 格式"), ("timeline_order", "timeline 时间未排序"),
+                       ("duplicate_timeline", "timeline 存在重复时刻")):
+        if counts[key]:
+            rep.warn("%s（观察项）：%d 处" % (label, counts[key]))
+    rep.extended = dict(counts)
 
 
 def validate_output(rep, path):

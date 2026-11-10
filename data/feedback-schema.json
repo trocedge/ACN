@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "description": "面向普通同学的纠错数据结构，不采集个人身份信息",
+  "fields": [
+    {
+      "name": "type",
+      "required": true,
+      "values": [
+        "日期错误",
+        "地点错误",
+        "链接失效",
+        "评级错误",
+        "其他"
+      ]
+    },
+    {
+      "name": "conference_id",
+      "required": true,
+      "source": "data/conferences.yml 的 events[].id"
+    },
+    {
+      "name": "original_value",
+      "required": false
+    },
+    {
+      "name": "suggested_value",
+      "required": false
+    },
+    {
+      "name": "source_link",
+      "required": false,
+      "note": "会议官网等可核查来源"
+    }
+  ],
+  "submit_to": "本仓库 Issues 预填链接（非上游仓库）"
+}
