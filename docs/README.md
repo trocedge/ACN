@@ -27,6 +27,7 @@
 | 文档 | 内容 |
 |---|---|
 | `quality-review-and-improvement-plan.md` | 10 条优点、20 条缺点、三期改进计划书、开发执行指令（提示词） |
+| `optimization-plan-40.md` | 针对 40 条差距的逐条详细方案、验收与增量提示词（含总指令） |
 | `implementation-report.md` | 20 条缺点逐条落地状态、验证数字、诚实边界、待确认 5 项 |
 | `gap-to-full-score.md` | 四维度各 10 条（共 40 条）「距离满分差在哪」与补齐动作 |
 | `test-baseline-analysis.md` | 82 项测试中 14 项既有错误的根因分类与修复建议 |
