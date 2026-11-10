@@ -33,6 +33,7 @@
 | `test-baseline-analysis.md` | 既有测试错误的根因分类与修复建议 |
 | `test-fix-plan.md` | 测试修复进展（14→12 错）与剩余 12 项补丁 |
 | `acceptance-40.md` | 40 条逐条验收表与状态汇总 |
+| `full-audit-score.md` | **全方位实测评分报告**：13 项实测、五维重评、双口径总分、扣分明细、天花板与最短路径 |
 | `corrections.md` | **重要**：此前不准确表述的更正记录，对外汇报以此为准 |
 | `unparsed-fields.md` | 中文辅助字段未覆盖清单（自动生成的原始数据） |
 | `timeline-order-observations.md` | 校验 WARN 的 3 处观察项明细 |
