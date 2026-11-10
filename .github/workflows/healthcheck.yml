@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+        with: {python-version: '3.12'}
       - run: pip install PyYAML
       - name: 数据探活（含快照新鲜度与源档案校验）
         run: python docs/ci-templates/healthcheck.py --json healthcheck.json
@@ -21,4 +21,4 @@ jobs:
       - name: 归档报告
         if: always()
         uses: actions/upload-artifact@v4
-        with: { name: healthcheck-report, path: healthcheck.json }
+        with: {name: healthcheck-report, path: healthcheck.json}
