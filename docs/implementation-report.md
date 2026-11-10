@@ -22,12 +22,12 @@
 | 06 | 移动端体验未验证 | ⏸ | `docs/field-contract.md` §5 | 已给出展示层使用建议与 7 视口验收口径；页面改造后由界面层执行 |
 | 07 | 两套日期格式并存 | ✅ | `build_compact_data.py`、`validate_data.py` | 产出统一 ISO 8601；源档案格式纳入 ERROR 级校验门禁 |
 | 08 | 时区取值不统一 | ✅ | `docs/timezone-dictionary.md` | 2357 条实测分布、别名表建议、换算规则；**不改原值** |
-| 09 | 缺 PR 前强制数据校验 | ✅ | `scripts/validate_data.py`、`docs/ci-templates/data-check.yml` | ERROR/WARN 分级，源档案门禁 ERROR 0；提供可复制的 CI 模板 |
+| 09 | 缺 PR 前强制数据校验 | ✅ | `scripts/validate_data.py`、`docs/ci-templates/data-check.md` | ERROR/WARN 分级，源档案门禁 ERROR 0；提供可复制的 CI 模板 |
 | 10 | 录取率靠标题关联 | ✅ | `validate_data.py`、`docs/test-baseline-analysis.md` | 实证 321 份中 23 份未直接匹配，列为 WARN 并给出 id 级关联建议 |
 | 11 | 字段语义边界不清 | ✅ | `docs/field-contract.md` | 顶层 / 届次 / 时间节点三层字段契约，含展示用途与正确性边界 |
 | 12 | 生成物入库策略未定 | ✅ / ⏸ | `docs/generated-artifacts-policy.md` | 两方案对比、当前按「随仓库提交」、演进路径；**待项目组拍板**，未擅自改 `.gitignore` |
 | 13 | 测试跨平台不达标 | ✅ / ⏸ | `docs/test-baseline-analysis.md` | 14 项既有错误按四类根因分析并给修复优先级；**未擅自改他人测试源码** |
-| 14 | 自动发布链路未串 | ✅ / ⏸ | `docs/ci-templates/data-check.yml` | 提供校验工作流与可选「重新生成」任务模板；现行 workflow 未改 |
+| 14 | 自动发布链路未串 | ✅ / ⏸ | `docs/ci-templates/data-check.md` | 提供校验工作流与可选「重新生成」任务模板；现行 workflow 未改 |
 | 15 | 前端技术栈门槛高 | ✅ | `docs/local-development.md` | 中文上手步骤、目录速查、常见坑、提交前清单 |
 | 16 | 缺监控与失败告警 | ✅ | `docs/ci-templates/healthcheck.py` | 可运行探活脚本（文件/解析/条数/新鲜度/校验），本次实测「健康」 |
 | 17 | 贡献文档英文且指向上游 | ✅ | `CONTRIBUTING.md` | 中文指南，明确 PR 目标为本仓库对应分支，列出三条数据约定 |
@@ -69,7 +69,7 @@
 
 | 文件 | 对应缺点 |
 |---|---|
-| `docs/ci-templates/data-check.yml` | 09、14 |
+| `docs/ci-templates/data-check.md` | 09、14 |
 | `docs/ci-templates/healthcheck.py` | 16 |
 
 ---
@@ -103,7 +103,7 @@
 | 项 | 原因 | 交付的替代物 |
 |---|---|---|
 | `src/`、`index.html` 等前端源码 | 由界面层负责，改动会冲突 | 字段契约、展示层使用建议、7 视口验收口径 |
-| 现行 `.github/workflows/` 配置 | 由工程/发布层负责 | `docs/ci-templates/data-check.yml` 模板 |
+| 现行 `.github/workflows/` 配置 | 由工程/发布层负责 | `docs/ci-templates/data-check.md` 模板 |
 | `.gitignore` | 生成物策略需项目组拍板 | `docs/generated-artifacts-policy.md` 两方案对比 |
 | 14 项既有测试源码 | 属独立修复任务，不宜混入本次 PR | `docs/test-baseline-analysis.md` 根因与修复优先级 |
 | 页面第三方脚本 | 需界面层评估后决定 | `docs/privacy-assessment.md` 三方案与文案要素 |

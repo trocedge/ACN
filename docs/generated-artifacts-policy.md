@@ -50,7 +50,7 @@
    由 CI 执行 `python scripts/build_compact_data.py` 生成后再构建部署；
    此时 `status` 每次构建重算，`status_as_of` 才有长期意义。
 3. 切换时需同步更新：`docs/data-format-specification.md`、`docs/data-changelog.md`、
-   `docs/ci-templates/data-check.yml` 与前端读取路径。
+   `docs/ci-templates/data-check.md` 与前端读取路径。
 
 ---
 

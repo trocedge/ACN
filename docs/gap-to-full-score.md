@@ -48,7 +48,7 @@
 
 | # | 差距在哪 | 为什么还没满分 | 补齐动作 |
 |---|---|---|---|
-| 01 | CI 模板未启用 | `docs/ci-templates/data-check.yml` **只是模板**，未复制到 `.github/workflows/`，PR 门禁实际不生效 | 由工程负责人复制启用并验证一次红/绿 |
+| 01 | CI 模板未启用 | `docs/ci-templates/data-check.md` **只是模板**，未复制到 `.github/workflows/`，PR 门禁实际不生效 | 由工程负责人复制启用并验证一次红/绿 |
 | 02 | 校验未接钩子 | `validate_data.py` 靠手动执行，**无 pre-commit、无 PR 强制检查** | 接入 CI 后补本地钩子 |
 | 03 | 14 项既有测试错误未修 | 2 项缺 `icalendar`、1 项 symlink 权限、1 项 sqlite 句柄占用、10 项临时目录清理，`docs/test-baseline-analysis.md` 只给了根因与建议 | 按 P0→P2 优先级单独提 PR 修复 |
 | 04 | 测试依赖未声明齐全 | `requirements.txt` 未覆盖测试所需依赖，**干净环境跑全量单测仍失败** | 补齐依赖与版本下限，CI 中 `pip install -r` |

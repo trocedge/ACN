@@ -155,7 +155,7 @@ git diff --name-only | grep '^conference/'     # 必须无输出（老档案零�
 ```
 【第 07 条提示词】（先粘贴总指令）
 目标：消除 status 的过期与近似判定。
-文件：修改 scripts/build_compact_data.py；更新 docs/ci-templates/data-check.yml、docs/field-contract.md。
+文件：修改 scripts/build_compact_data.py；更新 docs/ci-templates/data-check.md、docs/field-contract.md。
 要求：依赖第 02 条完成后再执行；把 PT 条目的判定依据切换为换算后的北京时间；
       CI 定时重算只给配置模板，不直接改现行 workflow；status_as_of 每次生成更新。
 验收：local_naive 为 0；status_as_of 与生成时刻一致；通用验收四项通过。
@@ -324,12 +324,12 @@ git diff --name-only | grep '^conference/'     # 必须无输出（老档案零�
 ### 组三 · 工程校验与模板（01—10）
 
 #### 21 CI 模板未启用
-**方案**：把 `docs/ci-templates/data-check.yml` 复制到 `.github/workflows/data-check.yml`，按仓库 Python 版本调整；由工程负责人启用并做一次红/绿验证（故意改坏一份 deadline → PR 变红 → 恢复 → 变绿）。
+**方案**：把 `docs/ci-templates/data-check.md` 复制到 `.github/workflows/data-check.yml`，按仓库 Python 版本调整；由工程负责人启用并做一次红/绿验证（故意改坏一份 deadline → PR 变红 → 恢复 → 变绿）。
 **验收**：PR 触发校验；红/绿验证记录留档。
 ```
 【第 21 条提示词】（先粘贴总指令）
 目标：启用数据校验门禁（需工程负责人执行）。
-文件：从 docs/ci-templates/data-check.yml 复制到 .github/workflows/data-check.yml。
+文件：从 docs/ci-templates/data-check.md 复制到 .github/workflows/data-check.yml。
 要求：先给拟复制的配置与差异说明，确认后再操作；不改其他 workflow；
       给红/绿验证步骤（改坏一份 yml 的 deadline → 确认 PR 阻断 → 恢复）。
 验收：PR 触发校验；ERROR 不为 0 时确实阻断；验证记录写入 docs/ci-enablement.md。
@@ -378,7 +378,7 @@ git diff --name-only | grep '^conference/'     # 必须无输出（老档案零�
 ```
 【第 25 条提示词】（先粘贴总指令）
 目标：让探活真正定时运行并在异常时通知。
-文件：更新 docs/ci-templates/data-check.yml（新增 schedule 与 healthcheck 步骤）、docs/ci-templates/notify-contract.md。
+文件：更新 docs/ci-templates/data-check.md（新增 schedule 与 healthcheck 步骤）、docs/ci-templates/notify-contract.md。
 要求：只给模板不直接改现行 workflow；通知接口用占位约定（不写死任何账号、密钥或外部地址）；
       报告按运行编号归档；失败时退出码非 0。
 验收：手动触发一次输出"健康"或明确异常；notify-contract 含失败分支。
@@ -414,7 +414,7 @@ git diff --name-only | grep '^conference/'     # 必须无输出（老档案零�
 ```
 【第 28 条提示词】（先粘贴总指令）
 目标：让校验结果可追溯、可比较。
-文件：新增 scripts/report_trend.py、docs/validation-trend.md；更新 docs/ci-templates/data-check.yml 归档步骤。
+文件：新增 scripts/report_trend.py、docs/validation-trend.md；更新 docs/ci-templates/data-check.md 归档步骤。
 要求：归档按运行编号命名；趋势汇总只读报告不改写历史数据；缺报告时明确标注"无数据"而不是补 0。
 验收：连续 3 份报告能生成趋势表；通用验收四项通过。
 ```
