@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-"""ACN 数据格式改造原型（B 任务）。
+"""ACN 数据格式转换。
 
-设计原则（按学长 2026-11-09 群内要求）：
-  1. 不照抄 oseddl 的 conferences/competitions/activities 三张表 —— 项目不需要「活动」等分类，
-     只产出一份精简大表，行式展示友好。
-  2. 保持原有数据链路：老 conference/**/*.yml 一个字不动，本脚本只读不写，
-     别人继续按老格式提 PR，不受影响。
-  3. 不删任何老字段：界面「仅保留重要内容」是展示层的事，数据层删字段不可逆，
-     等 A 同学确认字段表后再精修。
-  4. 时区只做「保留原值 + 补可确定的 UTC 偏移」，绝不把 AoE 硬替换成 Asia/Shanghai。
+将 conference/ 下的散装会议档案合并为一份适合行式展示的精简数据视图。
+
+设计原则：
+  1. 本项目数据均为学术会议，不采用参考站的三表分类方案，只产出一份表。
+  2. 保持原有数据链路：老档案只读，贡献方式（改 yml 提 PR）不变。
+  3. 字段先全保留：界面展示范围属展示层决策，数据层不做不可逆删减。
+  4. 时区保留原值并补可确定的 UTC 偏移，不做静态时区替换。
 
 用法：
-    python scripts/build_compact.py                  # 产出 data/conferences.yml
-    python scripts/build_compact.py --out public/data/conferences.yml
-    python scripts/build_compact.py --check          # 只校验不落盘
+    python scripts/build_compact_data.py                  # 产出 data/conferences.yml
+    python scripts/build_compact_data.py --out public/data/conferences.yml
+    python scripts/build_compact_data.py --check          # 仅校验，不落盘
+
+字段规范与验证结果见 docs/data-format-specification.md。
 """
 import argparse
 import io
@@ -180,7 +181,7 @@ def validate(rows, stats):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="ACN 数据格式改造（B 任务）")
+    ap = argparse.ArgumentParser(description="ACN 数据格式转换与校验")
     ap.add_argument("--out", default=str(DEFAULT_OUT), help="输出路径")
     ap.add_argument("--check", action="store_true", help="只校验不落盘")
     args = ap.parse_args()
