@@ -193,7 +193,7 @@ pub fn TabularView(use_english: RwSignal<bool>) -> impl IntoView {
         loading.set(true);
         failed.set(false);
         spawn_local(async move {
-            let origin = window().and_then(|browser| browser.location().origin().ok());
+            let origin = crate::site_base_url();
             let result = match origin {
                 Some(origin) => fetch_all_conf(&origin).await,
                 None => Err(std::io::Error::other("browser origin unavailable").into()),

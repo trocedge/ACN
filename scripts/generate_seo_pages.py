@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 from collections import defaultdict
@@ -21,7 +22,9 @@ from conference_share_image import deadline_card_data, share_images
 
 
 ROOT = Path(__file__).resolve().parent.parent
-BASE_URL = "https://ccfddl.com"
+# Canonical site origin, overridable so the same sources can be published to a
+# GitHub Pages project site instead of the production domain.
+BASE_URL = (os.environ.get("CCFDDL_SITE_URL") or "https://ccfddl.com").rstrip("/")
 KNOWN_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}(?::\d{2})?)?$")
 UNCONFIRMED_DATE = re.compile(
     r"\b(?:TBD|TBA|TBC|tentative|estimated?|approx(?:imate(?:ly)?)?|expected|predict(?:ed|ion)?|provisional)\b"

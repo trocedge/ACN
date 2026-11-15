@@ -7,6 +7,7 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::window;
 
+use crate::SITE_BASE_PATH;
 use crate::components::favorites::{FavoritesContext, start_github_login};
 use crate::components::gitbutton::GitButton;
 use thaw::Icon;
@@ -74,7 +75,7 @@ pub fn Header(
     view! {
         <section>
             <div class="header-main">
-                <a href="/" class="title">
+                <a href=format!("{SITE_BASE_PATH}/") class="title">
                     <span class="title-normal">"CCFDDL"</span>
                     <span class="title-normal">"\u{00a0}Open\u{00a0}"</span>
                     <span class="title-accent">"Deadlines"</span>
@@ -210,9 +211,9 @@ pub fn Header(
                 "Worldwide Conference Deadline Countdowns."
                 {(!table_view).then(|| view! {
                     " Preview in "
-                    <a style="color: #666666" href="/?view=table" target="_blank" rel="noopener noreferrer">"tabular form"</a>
+                    <a style="color: #666666" href=format!("{SITE_BASE_PATH}/?view=table") target="_blank" rel="noopener noreferrer">"tabular form"</a>
                     " or "
-                    <a style="color: #666666" href="/venues/" target="_blank" rel="noopener noreferrer">"directory"</a>
+                    <a style="color: #666666" href=format!("{SITE_BASE_PATH}/venues/") target="_blank" rel="noopener noreferrer">"directory"</a>
                     "."
                 })}
             </div>

@@ -1546,7 +1546,7 @@ static UTC_MAP: OnceLock<HashMap<String, String>> = OnceLock::new();
 type AcceptanceRateMap = HashMap<String, Vec<(i32, String)>>;
 
 fn browser_origin() -> Option<String> {
-    window().and_then(|browser| browser.location().origin().ok())
+    crate::site_base_url()
 }
 
 const DISPLAY_TIMEZONES: &[&str] = &[

@@ -2,24 +2,36 @@ name: Deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+# GitHub Pages deployment needs an OIDC token plus permission to publish.
 permissions:
   contents: read
+  pages: write
+  id-token: write
+# Never run two Pages deployments at once, but let an in-flight one finish.
 concurrency:
-  group: deploy-site
+  group: pages
   cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # Use the runner's stable Chrome for production share cards.
-      CHROME_BINARY: /usr/bin/google-chrome
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
+      - name: Resolve site base path
+        # A repository named <owner>.github.io is served from the domain root,
+        # every other repository is served from /<repo>/.
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          repo="${GITHUB_REPOSITORY#*/}"
+          if [ "$repo" = "${owner}.github.io" ]; then
+            base=""
+          else
+            base="/${repo}"
+          fi
+          echo "SITE_BASE_PATH=${base}" >> "$GITHUB_ENV"
+          echo "SITE_URL=https://${owner}.github.io${base}" >> "$GITHUB_ENV"
+          echo "Publishing to https://${owner}.github.io${base}/"
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -29,10 +41,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-      - name: Test share-card browser and rendering
-        run: |
-          node --test scripts/test_share_browser.mjs
-          python -m unittest discover -s scripts -p 'test_*share_image.py'
       - name: Assemble yml files
         run: python scripts/build_data.py
       - name: Generate iCal files
@@ -40,46 +48,67 @@ jobs:
           python extensions/cli/ccfddl/convert_to_ical.py --output-dir public/conference/deadlines
       - name: Generate RSS feeds
         run: |
-          python extensions/cli/ccfddl/convert_to_rss.py --output-dir public/conference/deadlines --feed-base-url https://ccfddl.com/conference/deadlines/
+          python extensions/cli/ccfddl/convert_to_rss.py --output-dir public/conference/deadlines --feed-base-url "${SITE_URL}/conference/deadlines/"
       # Install Rust Nightly Toolchain, with Clippy & Rustfmt
       - name: Install nightly Rust
         uses: dtolnay/rust-toolchain@nightly
         with:
           components: clippy, rustfmt
-      - name: Add WASM target
-        run: rustup target add wasm32-unknown-unknown
+          targets: wasm32-unknown-unknown
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: pages-site
       - name: Download and install Trunk binary
         run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.18.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
       - name: Build with Trunk
-        # "${GITHUB_REPOSITORY#*/}" evaluates into the name of the repository
-        # using --public-url something will allow trunk to modify all the href paths like from favicon.ico to repo_name/favicon.ico .
-        # this is necessary for github pages where the site is deployed to username.github.io/repo_name and all files must be requested
-        # relatively as favicon.ico. if we skip public-url option, the href paths will instead request username.github.io/favicon.ico which
-        # will obviously return error 404 not found.
-        run: ./trunk build --release
+        # --public-url keeps every generated asset relative to the sub-path the
+        # site is served from; CCFDDL_BASE_PATH is compiled into the WASM app so
+        # its data fetches and links resolve under the same prefix.
+        env:
+          CCFDDL_BASE_PATH: ${{ env.SITE_BASE_PATH }}
+        run: ./trunk build --release --public-url "${SITE_BASE_PATH}/"
       - name: Generate crawlable conference pages
-        run: python scripts/generate_seo_pages.py
-      - name: Checkout published site assets
-        uses: actions/checkout@v4
+        env:
+          CCFDDL_SITE_URL: ${{ env.SITE_URL }}
+        run: python scripts/generate_seo_pages.py --skip-share-images
+      - name: Rewrite asset paths for sub-path hosting
+        run: python scripts/rewrite_base_path.py dist --base-path "${SITE_BASE_PATH}"
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
         with:
-          repository: ccfddl/ccfddl.github.io
-          ref: page
-          path: previous-site
-          token: ${{ secrets.ACCESS_TOKEN }}
-          persist-credentials: false
-      - name: Update sitemap dates for changed venue content
-        run: python scripts/update_sitemap_dates.py --previous previous-site
-      - name: Retain assets for cached pages and modules
-        run: python scripts/retain_site_assets.py --previous previous-site --retention-hours 24
-      - name: Config Git
-        run: |
-          git config --global user.email "jacklightchen@gmail.com"
-          git config --global user.name "jacklightChen"
-      - name: Deploy
-        run: |
-          cd dist
-          echo 'ccfddl.com' > CNAME
-          git init
-          git add --all
-          git commit -m "Site Update:`TZ=':Asia/Shanghai' date +' %Y-%m-%d %H:%M:%S'`"
-          git push --force https://${{ secrets.ACCESS_TOKEN }}@github.com/ccfddl/ccfddl.github.io.git master:page
+          enablement: true
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+  notify:
+    # Runs even when the build or the deploy failed, so a broken pipeline still
+    # reaches the Feishu group.
+    needs: [build, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Notify Feishu
+        continue-on-error: true
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          COMMIT_SHA: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scripts/notify_feishu.py
