@@ -1,6 +1,7 @@
 # CCF-Deadlines
 
 > 面向中文使用者：本项目汇总学术会议与竞赛的投稿截止日，帮助同学及时掌握时间节点。
+> - 收录范围与方向：[项目范围与收录约定](docs/project-scope.md)｜[教育部白名单竞赛清单](docs/whitelist-competitions.md)
 > - 第一次使用：[使用入门与术语说明](docs/glossary.md)
 > - 参与数据维护：[贡献指南](CONTRIBUTING.md)
 > - 全部文档：[文档索引](docs/README.md)

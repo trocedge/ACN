@@ -941,7 +941,7 @@ def main() -> None:
                         help="Generate pages and sitemap without browser-rendered share PNGs")
     args = parser.parse_args()
     conferences = json.loads(args.input.read_text(encoding="utf-8"))
-    categories = {item["sub"]: item["name"] for item in yaml.safe_load((ROOT / "conference/types.yml").read_text(encoding="utf-8"))}
+    categories = {item["sub"]: item["name"] for item in yaml.safe_load((ROOT / "archive" / "conference/types.yml").read_text(encoding="utf-8"))}
     acceptance_file = ROOT / "public/conference/allacc.json"
     acceptance_rows = json.loads(acceptance_file.read_text(encoding="utf-8")) if acceptance_file.exists() else []
     acceptances = {row["conference_key"]: row.get("accept_rates", []) for row in acceptance_rows}

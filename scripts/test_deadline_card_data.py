@@ -25,7 +25,7 @@ class DeadlineCardDataTests(unittest.TestCase):
         self.assertEqual(deadline_card_data({})['timezone'], 'Timezone not listed')
 
     def test_entire_repository_deadline_completeness(self):
-        root = Path(__file__).resolve().parent.parent / 'conference'
+        root = Path(__file__).resolve().parent.parent / 'archive' / 'conference'
         maximum = 0
         for path in root.rglob('*.yml'):
             if path.name == 'types.yml':

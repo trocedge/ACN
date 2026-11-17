@@ -22,7 +22,7 @@ import jsonschema.exceptions
 import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-DATA_ROOT = os.path.join(ROOT, 'conference')
+DATA_ROOT = os.path.join(ROOT, 'archive', 'conference')
 YAML_SCHEMA = None
 
 def load_conference_yaml_schema():

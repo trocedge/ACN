@@ -27,7 +27,7 @@ def gate():
 
 def find_target():
     """按行查找一处真实的 deadline 日期，不依赖空白字符正则。"""
-    for path in sorted((ROOT / "conference").glob("**/*.yml")):
+    for path in sorted((ROOT / "archive" / "conference").glob("**/*.yml")):
         if path.name == "types.yml":
             continue
         raw = path.read_bytes()

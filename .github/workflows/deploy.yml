@@ -4,11 +4,13 @@ on:
     branches: [main]
   workflow_dispatch:
 # GitHub Pages deployment needs an OIDC token plus permission to publish.
+
 permissions:
   contents: read
   pages: write
   id-token: write
 # Never run two Pages deployments at once, but let an in-flight one finish.
+
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -20,6 +22,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Resolve site base path
         # A repository named <owner>.github.io is served from the domain root,
+
         # every other repository is served from /<repo>/.
         run: |
           owner="${GITHUB_REPOSITORY_OWNER,,}"
@@ -49,8 +52,9 @@ jobs:
       - name: Generate RSS feeds
         run: |
           python extensions/cli/ccfddl/convert_to_rss.py --output-dir public/conference/deadlines --feed-base-url "${SITE_URL}/conference/deadlines/"
-      # Install Rust Nightly Toolchain, with Clippy & Rustfmt
       - name: Install nightly Rust
+        # Install Rust Nightly Toolchain, with Clippy & Rustfmt
+
         uses: dtolnay/rust-toolchain@nightly
         with:
           components: clippy, rustfmt
@@ -63,6 +67,7 @@ jobs:
         run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.18.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
       - name: Build with Trunk
         # --public-url keeps every generated asset relative to the sub-path the
+
         # site is served from; CCFDDL_BASE_PATH is compiled into the WASM app so
         # its data fetches and links resolve under the same prefix.
         env:
@@ -72,6 +77,8 @@ jobs:
         env:
           CCFDDL_SITE_URL: ${{ env.SITE_URL }}
         run: python scripts/generate_seo_pages.py --skip-share-images
+      - name: Generate whitelist competition pages
+        run: python scripts/generate_competition_pages.py
       - name: Rewrite asset paths for sub-path hosting
         run: python scripts/rewrite_base_path.py dist --base-path "${SITE_BASE_PATH}"
       - name: Configure GitHub Pages

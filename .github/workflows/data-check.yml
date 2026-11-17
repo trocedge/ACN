@@ -1,11 +1,12 @@
 name: data-check
 # 新增工作流：只校验源档案，不改动既有 deploy/merge_check/mcp_check/pre-commit
+
 on:
   pull_request:
-    paths: ['conference/**/*.yml', 'scripts/validate_data.py', 'scripts/build_compact_data.py', 'data/conferences.yml']
+    paths: ['archive/conference/**/*.yml', 'competition/**/*.yml', 'scripts/validate_data.py', 'scripts/build_compact_data.py', 'data/conferences.yml']
   push:
     branches: [main]
-    paths: ['conference/**/*.yml']
+    paths: ['archive/conference/**/*.yml', 'competition/**/*.yml']
   workflow_dispatch:
 permissions:
   contents: read
