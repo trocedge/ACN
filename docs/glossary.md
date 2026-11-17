@@ -90,7 +90,7 @@ deadline: 2021-07-02T17:00:00   timezone: AoE
 
 ## 5. 数据从哪来、怎么纠错
 
-- 每条数据对应仓库里 `conference/<学科>/<会议>.yml` 一份档案，`source_file` 字段记录了具体路径。
+- 每条会议数据对应仓库里 `archive/conference/<学科>/<会议>.yml` 一份档案，`source_file` 字段记录了具体路径。
 - 数据由社区通过 Pull Request 维护；发现错误请按 `CONTRIBUTING.md` 的流程提交更正。
 - 站点数据为人工维护汇总，**存在滞后或口径差异的可能**；关键时间请以会议官网为准。
 

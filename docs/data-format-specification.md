@@ -11,7 +11,7 @@
 
 ## 1. 背景与目标
 
-ACN 是学术会议与竞赛截止日追踪站。原始会议数据分散在 `conference/<学科>/<会议>.yml`，共 383 份档案、10 个学科目录，由 `scripts/build_data.py` 合并为 `public/conference/allconf.json` 供前端消费。
+ACN 是学术会议与竞赛截止日追踪站。原始会议数据分散在 `archive/conference/<学科>/<会议>.yml`（2026-11 由顶层 `conference/` 迁入归档），共 383 份档案、10 个学科目录，由 `scripts/build_data.py` 合并为 `public/conference/allconf.json` 供前端消费。竞赛数据主线目录为 `competition/`。
 
 前端改造目标是**行式展示、仅保留重要内容、风格现代化**，并面向全校同学开放使用。原有数据格式（`confs`、空格分隔日期、多套时区写法）不便直接对接新的展示层，因此需要新增一份精简数据视图。
 
@@ -23,7 +23,7 @@ ACN 是学术会议与竞赛截止日追踪站。原始会议数据分散在 `co
 
 | # | 原则 | 说明 |
 |---|---|---|
-| 1 | 单一事实来源 | 老 `conference/**/*.yml` 仍是唯一数据源，新格式全部由脚本派生，禁止手工双写 |
+| 1 | 单一事实来源 | 归档的 `archive/conference/**/*.yml` 仍是会议数据的唯一来源，新格式全部由脚本派生，禁止手工双写 |
 | 2 | 老链路不侵入 | 原有 `build_data.py` → `allconf.json` → 前端的链路保持原样，贡献方式（改 yml 提 PR）不变 |
 | 3 | 字段先全保留 | 界面「仅保留重要内容」属展示层决策，数据层不做不可逆删除，待字段契约确认后再收敛 |
 | 4 | 时区语义不失真 | 保留原值，另补可确定的 UTC 偏移；不做静态时区替换 |
@@ -76,7 +76,7 @@ ACN 是学术会议与竞赛截止日追踪站。原始会议数据分散在 `co
     core: A*
     thcpl: A
   dblp: sigmod
-  source_file: conference/DB/sigmod.yml
+  source_file: archive/conference/DB/sigmod.yml
   events:
     - year: 2022
       id: sigmod22

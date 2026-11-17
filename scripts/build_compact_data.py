@@ -30,7 +30,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC_DIR = ROOT / "conference"
+SRC_DIR = ROOT / "archive" / "conference"
 ACCEPT_DIR = ROOT / "accept_rates"
 DEFAULT_OUT = ROOT / "data" / "conferences.yml"
 
@@ -508,7 +508,7 @@ def main():
     with io.open(out, "w", encoding="utf-8") as f:
         yaml.safe_dump(rows, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
     print("\n已产出: %s (%.1f KB)" % (out, out.stat().st_size / 1024.0))
-    print("老文件未改动 : %s" % (SRC_DIR.exists() and "conference/ 仍在"))
+    print("老文件未改动 : %s" % (SRC_DIR.exists() and "源档案仍在（未删除）"))
     return 1 if problems else 0
 
 

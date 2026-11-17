@@ -1,0 +1,15 @@
+# 竞赛分类定义
+# 新增竞赛数据时，sub 字段须取以下值之一
+
+- name: 学科竞赛
+  name_en: Academic Competition
+  sub: ACADEMIC
+- name: 科技创新
+  name_en: Science and Technology Innovation
+  sub: TECH
+- name: 文艺体育
+  name_en: Arts and Sports
+  sub: ART
+- name: 综合实践
+  name_en: Comprehensive Practice
+  sub: PRACTICE

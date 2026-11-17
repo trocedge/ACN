@@ -133,7 +133,7 @@ def write_loading_data(conferences: list, acceptances: list, output_dir: Path) -
 
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    merge(ROOT / "conference", OUTPUT_DIR / "allconf.yml", exclude="types.yml")
+    merge(ROOT / "archive" / "conference", OUTPUT_DIR / "allconf.yml", exclude="types.yml")
     merge(ROOT / "accept_rates", OUTPUT_DIR / "allacc.yml")
     conferences = with_conference_openings(
         yaml.safe_load((OUTPUT_DIR / "allconf.yml").read_text(encoding="utf-8"))
@@ -147,7 +147,7 @@ def main() -> None:
     write_json_atomic(OUTPUT_DIR / "allacc.json", acceptances)
     write_loading_data(conferences, acceptances, OUTPUT_DIR)
     (OUTPUT_DIR / "allconf_archive.json").unlink(missing_ok=True)
-    shutil.copy2(ROOT / "conference" / "types.yml", OUTPUT_DIR / "types.yml")
+    shutil.copy2(ROOT / "archive" / "conference" / "types.yml", OUTPUT_DIR / "types.yml")
 
 
 if __name__ == "__main__":

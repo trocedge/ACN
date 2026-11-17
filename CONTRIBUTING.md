@@ -19,8 +19,9 @@
 
 | 内容 | 路径 |
 |---|---|
-| 会议档案 | `conference/<学科>/<会议>.yml` |
-| 学科定义 | `conference/types.yml` |
+| 会议档案（归档） | `archive/conference/<学科>/<会议>.yml` |
+| 学科定义 | `archive/conference/types.yml` |
+| 竞赛档案（主线） | `competition/<类别>/<竞赛>.yml` |
 | 历史录取率 | `accept_rates/<学科>/<会议>.yml` |
 
 学科代码共 10 类：`AI` `CG` `CT` `DB` `DS` `HI` `MX` `NW` `SC` `SE`。

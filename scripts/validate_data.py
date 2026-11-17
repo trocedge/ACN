@@ -25,7 +25,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC_DIR = ROOT / "conference"
+SRC_DIR = ROOT / "archive" / "conference"
 ACCEPT_DIR = ROOT / "accept_rates"
 DEFAULT_OUT = ROOT / "data" / "conferences.yml"
 
