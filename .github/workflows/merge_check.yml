@@ -37,3 +37,5 @@ jobs:
         run: ./trunk build --release
       - name: Generate crawlable conference pages
         run: python scripts/generate_seo_pages.py --skip-share-images
+      - name: Generate whitelist competition pages
+        run: python scripts/generate_competition_pages.py
