@@ -1,0 +1,4 @@
+# 测试依赖（候选，由维护者决定是否并入 requirements.txt）
+PyYAML>=6.0
+jsonschema>=4.0
+icalendar>=5.0

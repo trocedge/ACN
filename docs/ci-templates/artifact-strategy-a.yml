@@ -1,0 +1,15 @@
+# 方案 A：生成物随仓库提交（当前状态）
+# 界面对接期使用；数据变更需人工重跑生成脚本
+name: artifact-a
+on:
+  workflow_dispatch:
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install PyYAML
+      - run: python scripts/build_compact_data.py
+      - run: python scripts/validate_data.py

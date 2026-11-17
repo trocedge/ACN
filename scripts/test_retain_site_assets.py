@@ -60,7 +60,11 @@ class RetainedAssetTests(unittest.TestCase):
             output.mkdir()
             private = root / 'private.css'
             private.write_text('private')
-            (previous / 'linked.css').symlink_to(private)
+            try:
+                (previous / 'linked.css').symlink_to(private)
+            except (OSError, NotImplementedError) as error:
+                # Windows without developer mode cannot create symlinks.
+                self.skipTest(f'symbolic links unavailable on this host: {error}')
             self.assertEqual(retain_assets(output, previous, now=100), 0)
             self.assertFalse((output / 'linked.css').exists())
 

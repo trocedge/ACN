@@ -1,0 +1,26 @@
+# 录取率档案与会议档案关联表（依据：同名 stem，可核查）
+# 结论均为「已映射」；此前按标题比对产生的 23 份「断链」为误报，已修正。
+mapping:
+  cec: {file: "conference/AI/cec.yml", title: "IEEE CEC", status: "已映射"}
+  evoapps: {file: "conference/AI/evoapps.yml", title: "EvoApplications", status: "已映射"}
+  nips: {file: "conference/AI/nips.yml", title: "NeurIPS", status: "已映射"}
+  rulemlrr: {file: "conference/AI/rulemlrr.yml", title: "RuleML+RR", status: "已映射"}
+  eg: {file: "conference/CG/eg.yml", title: "Eurographics", status: "已映射"}
+  mm: {file: "conference/CG/mm.yml", title: "ACM MM", status: "已映射"}
+  sig: {file: "conference/CG/sig.yml", title: "ACM SIGGRAPH", status: "已映射"}
+  siga: {file: "conference/CG/siga.yml", title: "ACM SIGGRAPH ASIA", status: "已映射"}
+  vis: {file: "conference/CG/vis.yml", title: "IEEE VIS", status: "已映射"}
+  vr: {file: "conference/CG/vr.yml", title: "IEEE VR", status: "已映射"}
+  apweb: {file: "conference/DB/apweb.yml", title: "APWeb-WAIM", status: "已映射"}
+  pkdd: {file: "conference/DB/pkdd.yml", title: "ECML-PKDD", status: "已映射"}
+  aspdac: {file: "conference/DS/aspdac.yml", title: "ASP-DAC", status: "已映射"}
+  atc: {file: "conference/DS/atc.yml", title: "SIGOPS ATC", status: "已映射"}
+  cgo: {file: "conference/DS/cgo.yml", title: "IEEE/ACM CGO", status: "已映射"}
+  europar: {file: "conference/DS/europar.yml", title: "Euro-Par", status: "已映射"}
+  ubicomp: {file: "conference/HI/ubicomp.yml", title: "UbiComp/ISWC", status: "已映射"}
+  sai-computing: {file: "conference/MX/sai-computing.yml", title: "SAI", status: "已映射"}
+  dfrws-apac: {file: "conference/SC/dfrws-apac.yml", title: "DFRWS APAC", status: "已映射"}
+  eurosp: {file: "conference/SC/eurosp.yml", title: "EuroS&P", status: "已映射"}
+  ifip119: {file: "conference/SC/ifip119.yml", title: "IFIP WG 11.9", status: "已映射"}
+  sp: {file: "conference/SC/sp.yml", title: "S&P", status: "已映射"}
+  uss: {file: "conference/SC/uss.yml", title: "USENIX Security", status: "已映射"}

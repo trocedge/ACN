@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "locale": "zh-CN",
+  "status": {
+    "active": "进行中",
+    "past": "已结束",
+    "tbd": "待公布",
+    "unknown": "未知"
+  },
+  "status_basis": {
+    "beijing": "按北京时间判定",
+    "pt_dst": "按夏令时推算判定",
+    "local_naive": "本地时间近似",
+    "none": "无可用日期"
+  },
+  "timezone_hint": {
+    "aoe": "AoE = UTC-12，比北京时间晚 20 小时",
+    "null": "该时区需按具体日期换算，不显示推测时间",
+    "tbd": "官方尚未公布，不做推算"
+  },
+  "filters": {
+    "sub": "学科",
+    "year": "年份",
+    "rank_ccf": "CCF 等级",
+    "status": "状态"
+  },
+  "footer": {
+    "disclaimer": "数据人工维护，关键时间请以会议官网为准",
+    "as_of": "数据状态截至"
+  },
+  "fallback": "中文字段为空时回退英文原值，不显示空字符串"
+}

@@ -1,0 +1,6 @@
+# 体积门禁片段（第 29 条；超阈值只 WARN 不阻断）
+- name: 数据体积检查
+  run: |
+    SIZE=$(stat -c%s data/conferences.yml)
+    echo "当前体积 ${SIZE} bytes（阈值 1572864 = 1.5MB）"
+    if [ "$SIZE" -gt 1572864 ]; then echo "::warning::超出阈值，请检查字段增量"; fi

@@ -1,0 +1,6 @@
+#!/bin/sh
+# 本地提交前只校验源档案，不依赖任何生成物
+python scripts/validate_data.py --source || {
+  echo "数据校验未通过，请按提示修复后再提交（ ERROR 必须为 0 ）"
+  exit 1
+}

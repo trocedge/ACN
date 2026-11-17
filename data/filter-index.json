@@ -1,0 +1,64 @@
+{
+  "generated_from": "data/conferences.yml",
+  "total": 383,
+  "dimensions": {
+    "sub": [
+      "AI",
+      "CG",
+      "CT",
+      "DB",
+      "DS",
+      "HI",
+      "MX",
+      "NW",
+      "SC",
+      "SE"
+    ],
+    "year": [
+      2028,
+      2027,
+      2026,
+      2025,
+      2024,
+      2023,
+      2022,
+      2021,
+      2020,
+      2019
+    ],
+    "rank_ccf": [
+      "A",
+      "B",
+      "C",
+      "N"
+    ],
+    "status": [
+      "active",
+      "past",
+      "tbd"
+    ]
+  },
+  "by_sub": {
+    "AI": 61,
+    "CG": 36,
+    "CT": 20,
+    "DB": 31,
+    "DS": 61,
+    "HI": 22,
+    "MX": 23,
+    "NW": 30,
+    "SC": 51,
+    "SE": 48
+  },
+  "by_status": {
+    "past": 2155,
+    "active": 114,
+    "tbd": 88
+  },
+  "search_fields": [
+    "title",
+    "description"
+  ],
+  "note": "筛选索引由产出直接生成，不手写枚举",
+  "schema_version": "1.1"
+}

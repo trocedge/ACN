@@ -1,5 +1,12 @@
 # CCF-Deadlines
 
+> 面向中文使用者：本项目汇总学术会议与竞赛的投稿截止日，帮助同学及时掌握时间节点。
+> - 第一次使用：[使用入门与术语说明](docs/glossary.md)
+> - 参与数据维护：[贡献指南](CONTRIBUTING.md)
+> - 全部文档：[文档索引](docs/README.md)
+> - 数据格式与校验：[字段契约](docs/field-contract.md) ｜ [实测评分](docs/full-audit-score.md)
+
+
 > Helping researchers track worldwide conference ddls through (agentic) collaboration.
 
 [![LICENSE](https://img.shields.io/github/license/ccfddl/ccf-deadlines)](https://github.com/ccfddl/ccf-deadlines/blob/main/LICENSE)
