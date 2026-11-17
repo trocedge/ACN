@@ -1,37 +1,53 @@
 # 竞赛数据目录
 
-本目录存放**教育部白名单竞赛**的截止日数据，是项目主线数据源。
+本目录存放**大学生竞赛白名单**数据，是项目收窄后的主线数据源。会议数据已整体迁到 `archive/conference/`。
 
 ## 目录结构
 
 ```
 competition/
-├── types.yml          # 竞赛分类定义（ACADEMIC/TECH/ART/PRACTICE）
-├── <类别>/<竞赛>.yml   # 归类后的竞赛数据，如 competition/TECH/xxx.yml
+├── types.yml       # 竞赛分类定义（12 类，短码见下）
+├── whitelist.yml   # 白名单竞赛目录，84 项，按官方序号排列
+└── README.md
 ```
 
-## 一条竞赛数据的最小结构
+## 当前数据
+
+| 内容 | 数量 | 说明 |
+|---|---|---|
+| 竞赛条目 | 84 | 中国高等教育学会《2024 全国普通高校大学生竞赛分析报告》竞赛目录 |
+| 已核实官网 | 14 | 其余 `site` 留空，不填猜测地址 |
+| 报名截止时间 | 0 | 未采集，一律不填（填错比空着更糟） |
+
+## 单条数据结构
 
 ```yaml
-- title: 全国青少年科技创新大赛
-  description: 面向青少年的科技创新类竞赛
-  sub: TECH
-  confs:
-    - year: 2027
-      id: xxx27
-      link: https://example.com
-      timeline:
-        - deadline: '2027-03-01 23:59:59'
-          comment: 报名截止
-      timezone: UTC+8
+- seq: 1                          # 官方目录序号，不要改动
+  title: '中国国际 “互联网+”大学生创新创业大赛'   # 官方原文，不改写
+  sub: COMP                       # 分类短码
+  category: 综合类                 # 官方分类原文
+  site: https://cy.ncss.cn/       # 官网，未核实则整行不写
 ```
+
+采集到报名时间后，在条目下追加：
+
+```yaml
+  season: 2026-2027
+  deadline: '2027-03-01 23:59:59'
+  deadline_source: https://xxx    # 必须附来源，否则不予合入
+```
+
+## 分类短码
+
+`COMP` 综合 / `CS` 计算机 / `SCI` 理学 / `EE` 电子信息 / `MED` 医学 / `ENG` 其他工学 / `ART` 艺术 / `BIZ` 经管 / `LANG` 语言 / `VOC` 职业技能 / `ROBOT` 机器人 / `AGRI` 农学
 
 ## 收录规则
 
-1. 只收教育部白名单竞赛，判定依据见 `docs/whitelist-competitions.md`
-2. 每条数据须在 `docs/whitelist-competitions.md` 清单中有对应行
-3. `sub` 取 `types.yml` 中定义的分类值
+1. 必须在 `docs/whitelist-competitions.md` 的 84 项清单里，序号能对上
+2. 名称与官方目录原文一致，不改写、不简称
+3. `site` 只填核实过的，核实不了就留空
+4. `sub` 必须是 `types.yml` 里的 12 个短码之一
 
-## 当前状态
+## 注意事项
 
-**未做**：本目录目前只有分类定义，尚无真实竞赛数据。白名单官方名单待项目组提供后填入。
+`seq` 字段不要写成 `no`。YAML 1.1 把裸写的 `no` 当布尔值 `false` 解析，字段名会直接解析错误，之前踩过一次。

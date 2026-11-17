@@ -14,6 +14,8 @@ from conference_dates import with_conference_openings
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = ROOT / "public" / "conference"
+COMPETITION_DIR = ROOT / "competition"
+COMPETITION_OUTPUT = ROOT / "public" / "competition"
 MERGE_SCRIPT = ROOT / "scripts" / "merge.py"
 
 
@@ -30,7 +32,7 @@ def merge(source: Path, output: Path, exclude: str | None = None) -> None:
 def write_json_atomic(path: Path, data: object) -> None:
     temporary = path.with_name(f".{path.name}.tmp")
     temporary.write_text(
-        json.dumps(data, ensure_ascii=False, separators=(",", ":")),
+        json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
     temporary.replace(path)
@@ -131,6 +133,31 @@ def write_loading_data(conferences: list, acceptances: list, output_dir: Path) -
         write_json_atomic(parts_dir / f"acceptance-{index:02}.json", bucket)
 
 
+def build_competition() -> None:
+    """导出白名单竞赛目录，供外部程序读取。
+
+    只导出名称、分类、官网等已核实字段。报名截止时间尚未采集，
+    因此本产物不含日期，调用方不得据此推断赛程。
+    """
+    source = COMPETITION_DIR / "whitelist.yml"
+    if not source.exists():
+        print("跳过竞赛目录：未找到 competition/whitelist.yml")
+        return
+    items = yaml.safe_load(source.read_text(encoding="utf-8")) or []
+    types = yaml.safe_load((COMPETITION_DIR / "types.yml").read_text(encoding="utf-8")) or []
+    COMPETITION_OUTPUT.mkdir(parents=True, exist_ok=True)
+    write_json_atomic(COMPETITION_OUTPUT / "whitelist.json", {
+        "source": "中国高等教育学会《2024全国普通高校大学生竞赛分析报告》竞赛目录",
+        "source_url": "https://sk.njts.edu.cn/2024/0913/c3721a84943/page.htm",
+        "captured_at": "2026-11-17",
+        "total": len(items),
+        "note": "仅含竞赛名称与分类，报名截止时间待采集，不含日期字段",
+        "items": items,
+    })
+    write_json_atomic(COMPETITION_OUTPUT / "types.json", types)
+    print(f"竞赛目录: {len(items)} 项 -> {COMPETITION_OUTPUT.relative_to(ROOT)}")
+
+
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     merge(ROOT / "archive" / "conference", OUTPUT_DIR / "allconf.yml", exclude="types.yml")
@@ -148,6 +175,7 @@ def main() -> None:
     write_loading_data(conferences, acceptances, OUTPUT_DIR)
     (OUTPUT_DIR / "allconf_archive.json").unlink(missing_ok=True)
     shutil.copy2(ROOT / "archive" / "conference" / "types.yml", OUTPUT_DIR / "types.yml")
+    build_competition()
 
 
 if __name__ == "__main__":
