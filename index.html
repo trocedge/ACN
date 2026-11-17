@@ -13,7 +13,6 @@
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"CCFDDL","alternateName":"ccf-deadlines","url":"https://ccfddl.com/"}</script>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>CCFDDL | Agentic Conference Tracker</title>
-  <meta name="google-adsense-account" content="ca-pub-2114972416819347" />
   <link rel="stylesheet" href="privacy-modal.css?v=1" />
   <script src="privacy-modal.js?v=3" defer></script>
   <!-- Keep the interactive tracker's loading and empty-result screens ad-free. -->
@@ -70,27 +69,6 @@
       document.addEventListener('DOMContentLoaded', start, { once: true });
     }());
   </script>
-  <!-- Load analytics after the app's critical resources and first paint. -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    window.addEventListener('load', function () {
-      var loadAnalytics = function () {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-RY374M6FJ8';
-        document.head.appendChild(script);
-        gtag('js', new Date());
-        gtag('config', 'G-RY374M6FJ8');
-      };
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(loadAnalytics, { timeout: 3000 });
-      } else {
-        window.setTimeout(loadAnalytics, 1000);
-      }
-    }, { once: true });
-  </script>
-
   <!-- Keep the initial loading screen visible while the full stylesheet downloads. -->
   <link data-trunk rel="css" href="public/styles.css" media="print" fetchpriority="high" onload="this.media='all'" />
   <link rel="preload" href="conference/initial.json" as="fetch" type="application/json" crossorigin="anonymous" fetchpriority="high" />
@@ -109,7 +87,6 @@
   <link data-trunk rel="copy-file" href="public/mcp-support.html">
   <link data-trunk rel="copy-file" href="public/mcp-privacy.html">
   <link data-trunk rel="copy-file" href="public/mcp-terms.html">
-  <link data-trunk rel="copy-file" href="public/ads.txt">
   <link data-trunk rel="copy-file" href="public/robots.txt">
   <link data-trunk rel="copy-file" href="public/llms.txt">
   <link data-trunk rel="copy-file" href="public/sitemap.xml">

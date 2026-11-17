@@ -1730,7 +1730,7 @@ a {
 .conference-list--rows tbody {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 10px;
 }
 
 .conference-list--rows tr {
@@ -1738,25 +1738,26 @@ a {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   min-height: 0;
   overflow: visible;
-  border: 0;
-  border-bottom: 1px solid #dfe7ef;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid #e4e7ed;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .conference-list--rows tr:hover,
 .conference-list--rows tr:focus,
 .conference-list--rows tr:focus-within,
 .conference-list--rows tr:active {
-  border-color: #dfe7ef !important;
-  background: #f8fafc !important;
-  box-shadow: none !important;
+  border-color: #c6d5ec !important;
+  background: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(15, 35, 70, 0.1) !important;
+  transform: translateY(-1px);
 }
 
 .conference-list--rows tr:hover td,
 .conference-list--rows tr:hover .thaw-table-cell-layout {
-  background: #f8fafc !important;
+  background: transparent !important;
 }
 
 .conference-list--rows tr > td {

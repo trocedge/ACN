@@ -1,15 +1,10 @@
-use crate::components::batch_subscription_modal::BatchSubscriptionModal;
 use crate::components::checkbox_button::*;
 use crate::components::conf::ConfItem;
 use crate::components::conf::*;
 use crate::components::conference_controls::{ConferenceControls, ToolbarActions, ToolbarClock};
 use crate::components::countdown::{CountDown, urgency_class_for, use_interval};
-use crate::components::email_reminders::EmailReminderModal;
 use crate::components::favorites::FavoritesContext;
-use crate::components::favorites_timeline::FavoritesTimelineModal;
-use crate::components::message_wall::MessageWallModal;
 use crate::components::site_footer::SiteFooterLinks;
-use crate::components::subscription_modal::*;
 use crate::components::timeline::TimeLine;
 use crate::components::timezone::*;
 use chrono::{DateTime, Datelike, Duration, FixedOffset, NaiveDate, Utc};
@@ -87,15 +82,13 @@ pub fn ShowTable(
     // Favorites are account-scoped and loaded from the Cloudflare D1 API.
     let like_list = favorites.starred;
 
-    let show_subscription_modal = RwSignal::new(false);
-    let show_message_wall = RwSignal::new(false);
     let show_conf_detail = RwSignal::new(false);
     let selected_conf = RwSignal::new(None::<ConfItem>);
     let is_list_view = RwSignal::new(
         get_from_local_storage("conference_view")
             .as_deref()
             .map(|view| view == "list")
-            .unwrap_or(false),
+            .unwrap_or(true),
     );
     let sort_by_stars = RwSignal::new(
         get_from_local_storage("sort_by_stars")
@@ -587,85 +580,8 @@ pub fn ShowTable(
                             {move || if use_english.get() { "Most starred" } else { "最多收藏" }}
                         </Button>
                     </span>
-                    <Button
-                        class="view-mode-toggle"
-                        size=ButtonSize::Small
-                        appearance=ButtonAppearance::Subtle
-                        on_click=move |_| is_list_view.update(|value| *value = !*value)
-                        attr:title=move || {
-                            if use_english.get() {
-                                "switch UI"
-                            } else if is_list_view.get() {
-                                "切换新版UI"
-                            } else {
-                                "切换旧版UI"
-                            }
-                        }
-                    >
-                        {move || {
-                            if is_list_view.get() {
-                                view! { <Icon icon=icondata::BsGrid style="margin-right: 4px;" /> }
-                                    .into_any()
-                            } else {
-                                view! { <Icon icon=icondata::BsList style="margin-right: 4px;" /> }
-                                    .into_any()
-                            }
-                        }}
-                        {move || {
-                            if use_english.get() {
-                                "switch UI"
-                            } else if is_list_view.get() {
-                                "切换新版UI"
-                            } else {
-                                "切换旧版UI"
-                            }
-                        }}
-                    </Button>
-                    <Button
-                        size=ButtonSize::Small
-                        appearance=ButtonAppearance::Subtle
-                        on_click=move |_| show_message_wall.set(true)
-                    >
-                        <Icon icon=icondata::BsChatDots style="margin-right: 4px;" />
-                        {move || if use_english.get() { "Wall" } else { "吹水墙" }}
-                    </Button>
-                    <Button
-                        size=ButtonSize::Small
-                        appearance=ButtonAppearance::Subtle
-                        on_click=move |_| show_subscription_modal.set(true)
-                    >
-                        <Icon icon=icondata::AiCalendarOutlined style="margin-right: 4px;" />
-                        {move || if use_english.get() { "Subscribe" } else { "订阅" }}
-                    </Button>
                 </ToolbarActions>
             </ConferenceControls>
-
-            <SubscriptionModal
-                show=show_subscription_modal
-                use_english=use_english
-                check_list=check_list
-                rank_list=rank_list
-                core_rank_list=core_rank_list
-                thcpl_rank_list=thcpl_rank_list
-            />
-
-            <MessageWallModal show=show_message_wall use_english=use_english />
-
-            <FavoritesTimelineModal
-                show=show_favorites_timeline
-                use_english=use_english
-                conferences=all_conf_list
-                reference_time=base_time
-                display_timezone=time_zone
-            />
-
-            <BatchSubscriptionModal
-                show=show_batch_subscription
-                use_english=use_english
-                conferences=raw_conferences
-            />
-
-            <EmailReminderModal show=show_email_reminders use_english=use_english />
 
             <Dialog open=show_conf_detail>
                 <DialogSurface class="conference-detail-dialog">
@@ -1198,16 +1114,11 @@ pub fn ShowTable(
                                                                     {
                                                                         let conference_key = conf.id.clone();
                                                                         let pending_key = conference_key.clone();
-                                                                        let count_key = conference_key.clone();
                                                                         let is_liked = conf.is_like;
-                                                                        let label = if !favorites.loaded.get_untracked() {
-                                                                            "Loading favorites"
-                                                                        } else if is_liked {
-                                                                            "Remove from favorites"
-                                                                        } else if favorites.user.get_untracked().is_some() {
-                                                                            "Add to favorites"
+                                                                        let label = if is_liked {
+                                                                            "取消收藏"
                                                                         } else {
-                                                                            "Sign in with GitHub to favorite"
+                                                                            "收藏"
                                                                         };
                                                                         view! {
                                                                             <button
@@ -1233,9 +1144,6 @@ pub fn ShowTable(
                                                                                 } else {
                                                                                     icondata::BsStar
                                                                                 } />
-                                                                                <span class="conference-like-count">
-                                                                                    {move || favorites.count(&count_key)}
-                                                                                </span>
                                                                             </button>
                                                                         }
                                                                     }
