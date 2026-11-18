@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from urllib.parse import quote, urlparse
 
-from convert_to_ical import load_mapping, get_timezone, reverse_index
+from convert_to_ical import default_data_dir, load_mapping, get_timezone, reverse_index
 
 import yaml
 
@@ -214,6 +214,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate conference RSS feeds")
     parser.add_argument("--output-dir", type=Path, default=Path("."))
     parser.add_argument("--feed-base-url", help="Published directory URL for RSS self links")
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Directory with the per-conference YAML sources (default: archive/conference)",
+    )
     args = parser.parse_args()
     if args.feed_base_url:
         parsed = urlparse(args.feed_base_url)
@@ -222,8 +227,9 @@ if __name__ == "__main__":
             parser.error("--feed-base-url must be an absolute HTTP(S) directory URL without a query or fragment")
     output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
-    SUB_MAPPING = load_mapping("conference/types.yml")
-    paths = ls("conference", filter=lambda f: f.suffix == ".yml" and f.name != "types.yml")
+    data_dir = args.data_dir or default_data_dir()
+    SUB_MAPPING = load_mapping(str(data_dir / "types.yml"))
+    paths = ls(str(data_dir), filter=lambda f: f.suffix == ".yml" and f.name != "types.yml")
     index = reverse_index(paths, list(SUB_MAPPING.keys()))
 
     def write_feed(paths, filename, lang):
