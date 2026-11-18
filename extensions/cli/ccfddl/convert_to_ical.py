@@ -9,8 +9,22 @@ from pathlib import Path
 from icalendar import Calendar, Event, Timezone, TimezoneStandard
 
 
+def default_data_dir() -> Path:
+    """Return the directory holding the per-conference YAML sources.
+
+    The archives moved from ``conference/`` to ``archive/conference/`` in
+    November 2026; keep the old layout working for older checkouts.
+    """
+    for candidate in ("archive/conference", "conference"):
+        if Path(candidate).is_dir():
+            return Path(candidate)
+    return Path("archive/conference")
+
+
 # 中英类别映射表
-def load_mapping(path: str = "conference/types.yml"):
+def load_mapping(path: str | None = None):
+    if path is None:
+        path = str(default_data_dir() / "types.yml")
     with open(path, encoding="utf-8") as f:
         types = yaml.safe_load(f)
     if types is None:
@@ -328,10 +342,17 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Generate conference calendar feeds")
     parser.add_argument("--output-dir", type=Path, default=Path("."))
-    output_dir = parser.parse_args().output_dir
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Directory with the per-conference YAML sources (default: archive/conference)",
+    )
+    args = parser.parse_args()
+    output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
-    SUB_MAPPING = load_mapping("conference/types.yml")
-    paths = ls("conference", filter=lambda f: f.suffix == ".yml" and f.name != "types.yml")
+    data_dir = args.data_dir or default_data_dir()
+    SUB_MAPPING = load_mapping(str(data_dir / "types.yml"))
+    paths = ls(str(data_dir), filter=lambda f: f.suffix == ".yml" and f.name != "types.yml")
     index = reverse_index(paths, list(SUB_MAPPING.keys()))
     for lang in ["zh", "en"]:
         convert_to_ical(paths, str(output_dir / f"deadlines_{lang}.ics"), lang, SUB_MAPPING)

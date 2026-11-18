@@ -28,7 +28,12 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data" / "conferences.yml"
-SOURCE_DIR = ROOT / "conference"
+# 会议档案在 2026-11 由 conference/ 迁入 archive/conference/，两种结构都要能探活。
+SOURCE_DIR = next(
+    (ROOT / candidate for candidate in ("archive/conference", "conference")
+     if (ROOT / candidate).is_dir()),
+    ROOT / "archive" / "conference",
+)
 VALIDATE = ROOT / "scripts" / "validate_data.py"
 
 
