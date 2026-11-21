@@ -73,10 +73,6 @@ jobs:
         env:
           CCFDDL_BASE_PATH: ${{ env.SITE_BASE_PATH }}
         run: ./trunk build --release --public-url "${SITE_BASE_PATH}/"
-      - name: Generate crawlable conference pages
-        env:
-          CCFDDL_SITE_URL: ${{ env.SITE_URL }}
-        run: python scripts/generate_seo_pages.py --skip-share-images
       - name: Generate whitelist competition pages
         run: python scripts/generate_competition_pages.py
       - name: Rewrite asset paths for sub-path hosting

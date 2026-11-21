@@ -29,13 +29,25 @@ competition/
   site: https://cy.ncss.cn/       # 官网，未核实则整行不写
 ```
 
-采集到报名时间后，在条目下追加：
+采集到报名截止时间后（**核实官方公告后**），在条目下追加：
 
 ```yaml
-  season: 2026-2027
-  deadline: '2027-03-01 23:59:59'
-  deadline_source: https://xxx    # 必须附来源，否则不予合入
+  deadline: '2027-03-15T18:00:00'   # ISO 8601，北京时间
+  timezone: Asia/Shanghai
+  source_url: https://xxx           # 该截止时间的官方公告地址，必填
 ```
+
+`deadline` 只接受 `YYYY-MM-DDTHH:mm:ss` 格式，且必须同时填 `source_url`，否则 CI 校验不过。
+
+## 本地验证
+
+```bash
+python scripts/validate_competition.py      # 校验数据（含产物一致性）
+python scripts/build_data.py                # 重新生成 public/competition/*.json
+python scripts/test_validate_competition.py # 校验器单测
+```
+
+改完数据后跑上面三条，全部通过再提交。校验规则详见 `docs/page-inventory.md`。
 
 ## 分类短码
 

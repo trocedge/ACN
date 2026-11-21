@@ -25,6 +25,10 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Validate conference YAML
         run: python scripts/validate.py
+      - name: Validate competition whitelist
+        run: python scripts/validate_competition.py
+      - name: Competition validation tests
+        run: python scripts/test_validate_competition.py
       - name: Assemble yml files
         run: python scripts/build_data.py
       - name: Generate iCal files
@@ -39,7 +43,5 @@ jobs:
         run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.18.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
       - name: Build with Trunk
         run: ./trunk build --release
-      - name: Generate crawlable conference pages
-        run: python scripts/generate_seo_pages.py --skip-share-images
       - name: Generate whitelist competition pages
         run: python scripts/generate_competition_pages.py
