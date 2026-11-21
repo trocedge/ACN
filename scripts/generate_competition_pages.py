@@ -23,7 +23,7 @@ CSS = """
 body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
        max-width: 920px; margin: 0 auto; padding: 32px 20px; color: #1f2328;
        line-height: 1.7; background: #fff; }
-a { color: #0969da; text-decoration: none; }
+a { color: #5f4695; text-decoration: none; }
 a:hover { text-decoration: underline; }
 h1 { font-size: 26px; margin-bottom: 4px; }
 h2 { font-size: 19px; margin-top: 36px; border-bottom: 1px solid #d8dee4;
@@ -35,7 +35,7 @@ td, th { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eaeef2;
 th { color: #59636e; font-weight: 600; font-size: 13px; }
 td:last-child, th:last-child, td:nth-child(3), th:nth-child(3) { white-space: nowrap; }
 td.seq { color: #59636e; width: 44px; }
-.tag { display: inline-block; background: #ddf4ff; color: #0969da;
+.tag { display: inline-block; background: #f3eefc; color: #5f4695;
        border-radius: 12px; padding: 1px 10px; font-size: 13px; }
 .back { font-size: 14px; }
 footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #d8dee4;
@@ -59,7 +59,11 @@ def page(title: str, body: str) -> str:
 
 
 def deadline_text(item: dict) -> str:
-    return escape(str(item["deadline"])) if item.get("deadline") else "待官网公告"
+    deadline = item.get("deadline")
+    if not deadline:
+        return "待官网公告"
+    # ISO 8601 "YYYY-MM-DDTHH:mm:ss" -> "YYYY-MM-DD HH:mm"
+    return re.sub(r"T", " ", str(deadline), count=1)
 
 
 def detail_page(item: dict, category: str) -> str:
