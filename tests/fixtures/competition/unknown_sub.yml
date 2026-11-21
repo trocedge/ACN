@@ -1,0 +1,5 @@
+# 测试夹具：未知分类（必须校验失败）
+- seq: 1
+  title: 测试竞赛甲
+  sub: NOTEXIST
+  category: 不存在的分类

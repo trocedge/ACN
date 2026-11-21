@@ -151,7 +151,7 @@ def build_competition() -> None:
         "source_url": "https://sk.njts.edu.cn/2024/0913/c3721a84943/page.htm",
         "captured_at": "2026-11-17",
         "total": len(items),
-        "note": "仅含竞赛名称与分类，报名截止时间待采集，不含日期字段",
+        "note": "竞赛名称与分类为官方目录核实数据；deadline/source_url 为可选字段，未核实则不出现",
         "items": items,
     })
     write_json_atomic(COMPETITION_OUTPUT / "types.json", types)
