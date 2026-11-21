@@ -3999,3 +3999,229 @@ body:has(.conference-detail-dialog) .thaw-dialog-surface__backdrop {
     transform: translateX(-50%);
   }
 }
+
+/* ============ 竞赛首页（competition） ============ */
+
+.competition-main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 8px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.competition-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.competition-search {
+  flex: 1 1 240px;
+  min-width: 0;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #dcdfe6;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #303133;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.competition-search:focus {
+  border-color: #7c5cbf;
+  box-shadow: 0 0 0 3px rgba(124, 92, 191, 0.12);
+}
+
+.competition-fav-toggle {
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid #dcdfe6;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #606266;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.competition-fav-toggle:hover {
+  border-color: #b88a2d;
+  color: #b88a2d;
+}
+
+.competition-fav-toggle.is-active {
+  border-color: #e6a23c;
+  background: #fdf6e5;
+  color: #9a6b0e;
+}
+
+.competition-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.competition-filter-tag {
+  padding: 5px 13px;
+  border: 1px solid #e4e7ed;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #606266;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.competition-filter-tag:hover {
+  border-color: #7c5cbf;
+  color: #5f4695;
+}
+
+.competition-filter-tag.is-active {
+  border-color: #7c5cbf;
+  background: #f3eefc;
+  color: #5f4695;
+}
+
+.competition-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: #909399;
+  font-size: 13px;
+}
+
+.competition-directory-link {
+  color: #5f4695;
+  font-size: 13px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.competition-directory-link:hover {
+  text-decoration: underline;
+}
+
+.competition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comp-card {
+  border: 1px solid #e4e7ed;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.comp-card:hover {
+  border-color: #d8c8f0;
+  box-shadow: 0 6px 20px rgba(80, 60, 130, 0.08);
+  transform: translateY(-1px);
+}
+
+.comp-title {
+  color: #303133;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.comp-title:hover {
+  color: #5f4695;
+}
+
+.comp-card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.comp-seq {
+  color: #b0b3ba;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.comp-deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.comp-deadline-date {
+  color: #606266;
+  font-variant-numeric: tabular-nums;
+}
+
+.comp-deadline-tbd {
+  color: #a8abb2;
+}
+
+.comp-countdown {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.comp-countdown-open {
+  background: #e8f7ef;
+  color: #1d7a4a;
+}
+
+.comp-countdown-closed {
+  background: #f4f4f5;
+  color: #909399;
+}
+
+.competition-status {
+  padding: 48px 16px;
+  text-align: center;
+  color: #909399;
+  font-size: 14px;
+}
+
+.competition-status-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.competition-retry {
+  padding: 6px 18px;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #606266;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.competition-retry:hover {
+  border-color: #7c5cbf;
+  color: #5f4695;
+}
+
+@media (max-width: 480px) {
+  .comp-deadline {
+    margin-left: 0;
+  }
+}

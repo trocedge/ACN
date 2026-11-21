@@ -6,13 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self' https://github.com" />
-  <meta name="description" content="Agenticly track computer science conference submission deadlines, dates, locations and rankings. Browse latest venues and past years in the CCFDDL Venue Directory." />
-  <meta name="keywords" content="conference deadlines" />
-  <link rel="canonical" href="https://ccfddl.com/" />
-  <link rel="describedby" href="https://ccfddl.com/llms.txt" type="text/plain" />
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"CCFDDL","alternateName":"ccf-deadlines","url":"https://ccfddl.com/"}</script>
+  <meta name="description" content="ACN 学科竞赛资讯：大学生竞赛白名单 84 项，报名时间、官方入口与赛程信息一站式查询。" />
+  <meta name="keywords" content="大学生竞赛,竞赛白名单,报名时间,学科竞赛" />
+  <link rel="canonical" href="https://trocedge.github.io/ACN/" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"ACN 学科竞赛资讯","url":"https://trocedge.github.io/ACN/"}</script>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>CCFDDL | Agentic Conference Tracker</title>
+  <title>ACN 学科竞赛资讯</title>
   <link rel="stylesheet" href="privacy-modal.css?v=1" />
   <script src="privacy-modal.js?v=3" defer></script>
   <!-- Keep the interactive tracker's loading and empty-result screens ad-free. -->
@@ -71,7 +70,7 @@
   </script>
   <!-- Keep the initial loading screen visible while the full stylesheet downloads. -->
   <link data-trunk rel="css" href="public/styles.css" media="print" fetchpriority="high" onload="this.media='all'" />
-  <link rel="preload" href="conference/initial.json" as="fetch" type="application/json" crossorigin="anonymous" fetchpriority="high" />
+  <link rel="preload" href="competition/whitelist.json" as="fetch" type="application/json" crossorigin="anonymous" fetchpriority="high" />
 
   <!-- Include favicon in dist output: see https://trunkrs.dev/assets/#icon -->
   <link data-trunk rel="icon" href="public/favicon.ico" />
@@ -81,9 +80,10 @@
   <!-- include support for `wasm-bindgen --weak-refs` - see: https://rustwasm.github.io/docs/wasm-bindgen/reference/weak-references.html -->
   <link data-trunk rel="rust" data-wasm-opt="z" data-weak-refs />
 
-  <link rel="alternate" type="application/rss+xml" title="CCF Conference Deadlines (RSS)" href="https://ccfddl.com/conference/deadlines/deadlines_en.xml" />
+  <link rel="alternate" type="application/rss+xml" title="CCF Conference Deadlines (RSS)" href="conference/deadlines/deadlines_en.xml" />
 
   <link data-trunk rel="copy-dir" href="public/conference">
+  <link data-trunk rel="copy-dir" href="public/competition">
   <link data-trunk rel="copy-file" href="public/mcp-support.html">
   <link data-trunk rel="copy-file" href="public/mcp-privacy.html">
   <link data-trunk rel="copy-file" href="public/mcp-terms.html">
@@ -100,8 +100,8 @@
 
 <body>
   <div id="initial-loading" class="initial-loading" role="status" aria-live="polite">
-    <h1>ccf-deadlines</h1>
-    <span data-nosnippet>Loading conference deadlines...</span>
+    <h1>ACN 学科竞赛资讯</h1>
+    <span data-nosnippet>正在加载竞赛数据...</span>
     <button type="button" hidden>Retry</button>
   </div>
   <script>window.dispatchEvent(new Event('InitialLoadingReady'));</script>
