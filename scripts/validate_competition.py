@@ -26,7 +26,7 @@ DEFAULT_WHITELIST = ROOT / "competition" / "whitelist.yml"
 DEFAULT_TYPES = ROOT / "competition" / "types.yml"
 DEFAULT_JSON = ROOT / "public" / "competition" / "whitelist.json"
 
-# 官方目录共 84 项，序号 1—84 连续
+# 官方目录基础项 84 个，序号 1—84 必须连续；85 起允许向后连续扩展
 OFFICIAL_COUNT = 84
 
 # ISO 8601 日期时间，例：2027-03-15T18:00:00
@@ -109,16 +109,20 @@ def validate_items(items, types, *, strict_count: bool = True) -> list[str]:
 
     if strict_count:
         seqs = sorted(seen_seq)
-        expected = list(range(1, OFFICIAL_COUNT + 1))
-        if items and seqs != expected:
-            missing = sorted(set(expected) - set(seqs))
-            extra = sorted(set(seqs) - set(expected))
-            detail = []
-            if missing:
-                detail.append(f"缺 {missing}")
-            if extra:
-                detail.append(f"多出 {extra}")
-            errors.append(f"正式白名单应为 1—{OFFICIAL_COUNT} 连续序号，当前 {len(seqs)} 项: {'; '.join(detail)}")
+        if items:
+            base = list(range(1, OFFICIAL_COUNT + 1))
+            base_seqs = [s for s in seqs if s <= OFFICIAL_COUNT]
+            extra_seqs = [s for s in seqs if s > OFFICIAL_COUNT]
+            missing = sorted(set(base) - set(base_seqs))
+            extra_expected = list(range(OFFICIAL_COUNT + 1, OFFICIAL_COUNT + 1 + len(extra_seqs)))
+            extra_broken = extra_seqs != extra_expected
+            if missing or extra_broken:
+                detail = []
+                if missing:
+                    detail.append(f"缺 {missing}")
+                if extra_broken:
+                    detail.append(f"扩展项应为 {OFFICIAL_COUNT + 1} 起连续，当前 {extra_seqs}")
+                errors.append(f"正式白名单应为 1—{OFFICIAL_COUNT} 连续序号（85 起可向后连续扩展）: {'; '.join(detail)}")
 
     return errors
 

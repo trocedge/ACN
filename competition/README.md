@@ -6,8 +6,9 @@
 
 ```
 competition/
-├── types.yml       # 竞赛分类定义（12 类，短码见下）
-├── whitelist.yml   # 白名单竞赛目录，84 项，按官方序号排列
+├── types.yml           # 竞赛分类定义（12 类，短码见下）
+├── whitelist.yml       # 白名单竞赛目录，84 项基础 + 可扩展，按官方序号排列
+├── import-template.csv # 批量录入模板（表头 + 示例行）
 └── README.md
 ```
 
@@ -38,6 +39,39 @@ competition/
 ```
 
 `deadline` 只接受 `YYYY-MM-DDTHH:mm:ss` 格式，且必须同时填 `source_url`，否则 CI 校验不过。
+
+## 批量录入（推荐）
+
+一条一条手敲 YAML 费劲，批量补几十上百个建议走「填表格 → 一键转」：
+
+1. 复制 `import-template.csv`，用 Excel / WPS 打开填数据（一列一个字段）
+2. 跑转换脚本，自动合并进 `whitelist.yml` 并校验
+3. 跑「本地验证」三条，全绿再提交
+
+```bash
+python scripts/csv_to_whitelist.py 你的名单.csv
+```
+
+### 各列含义
+
+| 列 | 必填 | 说明 |
+|---|---|---|
+| seq | 是 | 序号。1—84 补全现有项，85 起新增扩展项（须连续） |
+| title | 新增时必填 | 官方名称原文；补全现有项时可留空（= 不改动） |
+| sub | 新增时必填 | 分类短码，12 选 1 |
+| category | 新增时必填 | 分类名称 |
+| site | 否 | 官网，核实过才填 |
+| deadline | 否 | 报名截止时间，`YYYY-MM-DDTHH:mm:ss` 北京时间 |
+| timezone | 否 | 固定 `Asia/Shanghai`，填了 deadline 才需要 |
+| source_url | 否 | 截止时间对应的官方公告地址，填了 deadline 必填 |
+
+### 规则
+
+- **空单元格 = 不改动**：补全现有项时，只填要更新的列，其余留空
+- **seq 命中现有项** → 只更新你填了的字段
+- **seq 是全新序号** → 追加到末尾，必须把 title / sub / category 填全
+- **deadline 留空** → 整组省略 deadline / timezone / source_url
+- 转换时自动校验，报错定位到 CSV 行号；写回前自动备份 `whitelist.yml.bak`
 
 ## 本地验证
 
