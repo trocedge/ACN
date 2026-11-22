@@ -10,8 +10,11 @@
 #   category 官方目录的竞赛分类原文
 #   site     官网，只填能从官方渠道核实的；留空表示待补
 #
-# 报名截止日期：本文件不含。当期赛季的报名时间需逐项从官网采集，
-# 未采集前不填，避免对外给出错误时间。
+# 报名截止日期（可选，核实官方公告后才填，规则见 docs/page-inventory.md）：
+#   deadline   'YYYY-MM-DDTHH:mm:ss'，北京时间
+#   timezone   Asia/Shanghai
+#   source_url 该截止时间对应的官方公告地址，有 deadline 必填
+#   未采集前不填，避免对外给出错误时间。CI 用 scripts/validate_competition.py 强制校验。
 - seq: 1
   title: '中国国际 “互联网+”大学生创新创业大赛'
   sub: COMP

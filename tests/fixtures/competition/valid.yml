@@ -1,0 +1,14 @@
+# 测试夹具：合法竞赛数据（含全部可选字段）
+# 用于 validate_competition.py 的正向用例
+- seq: 1
+  title: 测试竞赛甲（合法样例）
+  sub: COMP
+  category: 综合类
+  site: https://example.edu.cn/
+  deadline: '2027-03-15T18:00:00'
+  timezone: Asia/Shanghai
+  source_url: https://example.edu.cn/notice/
+- seq: 2
+  title: 测试竞赛乙（无日期，合法样例）
+  sub: CS
+  category: 计算机类
