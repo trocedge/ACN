@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install PyYAML
-      - name: 数据探活（含快照新鲜度与源档案校验）
+      - name: 数据探活（竞赛目录产物 + 会议快照提示）
         run: python docs/ci-templates/healthcheck.py --json healthcheck.json
       - name: 状态重算演练（只报告不写回）
         run: python scripts/refresh_status.py --dry
