@@ -146,14 +146,9 @@ def build_competition() -> None:
     items = yaml.safe_load(source.read_text(encoding="utf-8")) or []
     types = yaml.safe_load((COMPETITION_DIR / "types.yml").read_text(encoding="utf-8")) or []
     COMPETITION_OUTPUT.mkdir(parents=True, exist_ok=True)
-    write_json_atomic(COMPETITION_OUTPUT / "whitelist.json", {
-        "source": "中国高等教育学会《2024全国普通高校大学生竞赛分析报告》竞赛目录",
-        "source_url": "https://sk.njts.edu.cn/2024/0913/c3721a84943/page.htm",
-        "captured_at": "2026-11-17",
-        "total": len(items),
-        "note": "竞赛名称与分类为官方目录核实数据；deadline/source_url 为可选字段，未核实则不出现",
-        "items": items,
-    })
+    # 白名单 JSON 统一由 scripts/export_json.py 产出：RSS 与飞书通知也读这一份，
+    # 两边各写一次会互相覆盖，字段也容易走偏。
+    subprocess.run([sys.executable, str(ROOT / "scripts" / "export_json.py")], check=True)
     write_json_atomic(COMPETITION_OUTPUT / "types.json", types)
     print(f"竞赛目录: {len(items)} 项 -> {COMPETITION_OUTPUT.relative_to(ROOT)}")
 

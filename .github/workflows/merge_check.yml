@@ -31,6 +31,11 @@ jobs:
         run: python scripts/test_validate_competition.py
       - name: Assemble yml files
         run: python scripts/build_data.py
+      - name: Generate competition RSS
+        # PR 检查没有 Resolve site base path，这里按仓库名拼出 Pages 地址。
+        env:
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: python scripts/generate_rss.py
       - name: Install nightly Rust
         uses: dtolnay/rust-toolchain@nightly
       - name: Add WASM target
