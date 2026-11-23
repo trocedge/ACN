@@ -2,13 +2,14 @@ import json
 import os
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parent.parent
 
 # 读上一步的 JSON 产物
 JSON_PATH = Path(os.environ.get("COMPETITION_JSON") or ROOT / "public" / "competition" / "whitelist.json")
 # 输出 RSS
 OUT_PATH = Path(os.environ.get("COMPETITION_RSS") or ROOT / "public" / "competition" / "competitions.xml")
-SITE_URL = os.environ.get("SITE_URL", "https://example.com")
+SITE_URL = os.environ.get("SITE_URL", "").strip()
 
 
 ATOM_NS = "http://www.w3.org/2005/Atom"
@@ -58,7 +59,7 @@ def build_item(entry):
 
     # guid：用序号拼稳定标识，标题以后改了也不变
     guid = ET.SubElement(item, "guid", isPermaLink="false")
-    domain = SITE_URL.replace("https://", "").replace("http://", "").rstrip("/")
+    domain = urlparse(SITE_URL).netloc or SITE_URL.rstrip("/")
     guid.text = f"competition-{seq}@{domain}"
 
     return item
@@ -78,6 +79,8 @@ def build_feed(items):
 
 
 def main():
+    if not SITE_URL:
+        raise SystemExit("SITE_URL 未设置：生成的订阅链接会指向 example.com，已中止")
     items = load_items(JSON_PATH)
     rss = build_feed(items)
 

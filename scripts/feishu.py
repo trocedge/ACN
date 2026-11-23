@@ -9,12 +9,11 @@ import requests
 import yaml
 ROOT = Path(__file__).resolve().parent.parent
 
-SITE_URL = os.environ.get("SITE_URL", "")
+SITE_URL = os.environ.get("SITE_URL", "").strip()   # 站点全量清单地址，由 C 组部署后提供
 
 
 # ===== 配置 =====
 YAML_PATH = Path(os.environ.get("COMPETITION_YAML") or ROOT / "competition" / "whitelist.yml")
-SITE_URL = os.environ.get("SITE_URL", "")   # 站点全量清单地址，由 C 组部署后提供
 DUE_DAYS = 30                               # 临近截止阈值：30 天内
 SUMMARY_LIMIT = 5                           # 卡片里最多放几条摘要
 
@@ -29,12 +28,14 @@ COLOR_POOL = [
     ("neutral", "grey-50"),
 ]
 
-DEADLINE_FMT = "%Y-%m-%d %H:%M:%S"
+DEADLINE_FORMATS = ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d")
 
 
 def parse_deadline(text):
-    """兼容 '2027-03-01 23:59:59' 和 '2026-12-01' 两种写法，解析失败返回 None。"""
-    for fmt in (DEADLINE_FMT, "%Y-%m-%d"):
+    """兼容 ISO（2027-06-01T12:00:00）、空格分隔和纯日期三种写法，解析失败返回 None。"""
+    if not text:
+        return None
+    for fmt in DEADLINE_FORMATS:
         try:
             return datetime.strptime(text, fmt)
         except (ValueError, TypeError):
@@ -170,14 +171,12 @@ def gen_sign(timestamp, secret):
 
 
 def send_card(webhook, secret, card):
-    timestamp = str(int(time.time()))
-    sign = gen_sign(timestamp, secret)
-    payload = {
-        "timestamp": timestamp,
-        "sign": sign,
-        "msg_type": "interactive",
-        "card": card,
-    }
+    payload = {"msg_type": "interactive", "card": card}
+    if secret:
+        # 机器人开启「签名校验」时才需要 timestamp + sign。
+        timestamp = str(int(time.time()))
+        payload["timestamp"] = timestamp
+        payload["sign"] = gen_sign(timestamp, secret)
     resp = requests.post(webhook, json=payload, timeout=10)
     result = resp.json()
     if result.get("code") != 0:
@@ -186,11 +185,13 @@ def send_card(webhook, secret, card):
 
 
 def main():
-    webhook = os.environ.get("FEISHU_WEBHOOK")
-    secret = os.environ.get("FEISHU_SECRET")
-    if not webhook or not secret:
-        print("请先设置 FEISHU_WEBHOOK 和 FEISHU_SECRET 环境变量")
+    webhook = os.environ.get("FEISHU_WEBHOOK", "").strip()
+    secret = os.environ.get("FEISHU_SECRET", "").strip()
+    if not webhook:
+        print("FEISHU_WEBHOOK 未配置，跳过推送。")
         return
+    if not secret:
+        print("FEISHU_SECRET 未配置：按未开启签名校验的机器人发送。")
 
     competitions = load_competitions(YAML_PATH)
     print(f"共读取 {len(competitions)} 条竞赛")
