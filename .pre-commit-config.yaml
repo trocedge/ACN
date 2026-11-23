@@ -7,6 +7,10 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: fix-byte-order-marker
+        # competition/import-template.csv 是给 Excel 直接打开用的模板，
+        # BOM 是刻意保留的：没有它 Excel 会把中文读成乱码。
+        # scripts/csv_to_whitelist.py 以 utf-8-sig 读取，BOM 不会污染表头。
+        exclude: ^competition/import-template\.csv$
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: trailing-whitespace
