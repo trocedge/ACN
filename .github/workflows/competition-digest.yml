@@ -1,32 +1,25 @@
 name: competition-digest
-
 # 每天推一张竞赛倒计时卡片到飞书群。
 # 与 deploy 的部署通知分开：部署通知说「这次发布成没成」，
 # 这张卡片说「哪些比赛快截止了」，混在一起每次 push 都会刷屏。
-
 on:
   schedule:
-    - cron: '0 1 * * *'   # UTC 01:00 = 北京时间 09:00
+    - cron: '0 1 * * *' # UTC 01:00 = 北京时间 09:00
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-
       - name: Check Feishu secret
         env:
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
@@ -35,7 +28,6 @@ jobs:
             echo "::warning::仓库 Secret FEISHU_WEBHOOK 未配置，跳过本次推送"
             echo "SKIP=1" >> "$GITHUB_ENV"
           fi
-
       - name: Push countdown card
         if: env.SKIP != '1'
         env:
