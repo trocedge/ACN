@@ -202,6 +202,9 @@ node_modules
 # Generated conference data and feeds
 /public/conference/
 
+# Generated competition feed（CI 里由 scripts/generate_rss.py 产出，不入库）
+/public/competition/competitions.xml
+
 
 # local env files
 .env.local

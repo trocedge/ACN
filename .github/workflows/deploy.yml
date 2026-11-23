@@ -46,6 +46,9 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Assemble yml files
         run: python scripts/build_data.py
+      - name: Generate competition RSS
+        # SITE_URL 由上面的 Resolve site base path 写进 GITHUB_ENV，带 /<repo> 前缀。
+        run: python scripts/generate_rss.py
       - name: Install nightly Rust
         # Install Rust Nightly Toolchain, with Clippy & Rustfmt
 
